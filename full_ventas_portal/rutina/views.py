@@ -2,7 +2,7 @@ import uuid
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.files.storage import default_storage
 from PIL import Image
-from .models import Rutina, Frecuencia, Instructor, TipoDeRutina, Usuario, Cliente
+from .models import Rutina, TipoDeRutina, Instructor, Cliente, Usuario, InformacionPersonalInstructor
 from django.utils.dateparse import parse_date
 import io
 
@@ -13,18 +13,15 @@ def login(request):
     if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
-
+        
         try:
-            usuario = Usuario.objects.get(username=username)
-            
-            # Verificación de contraseña sin hash
-            if password == usuario.password and usuario.rol == "Administrador":
+            usuario = Usuario.objects.get(Username=username)
+            if password == usuario.Password and usuario.Tipo == "Cliente":
                 return redirect('menu')
             else:
-                return render(request, 'login.html', {'error': 'Usuario o contraseña no válido'})
-
+                return render(request, 'login.html', {'error': 'Usuario o contraseña no válidos'})
         except Usuario.DoesNotExist:
-            return render(request, 'login.html', {'error': 'Usuario o contraseña no válido'})
+            return render(request, 'login.html', {'error': 'Usuario o contraseña no válidos'})
 
     return render(request, 'login.html')
 
@@ -35,29 +32,24 @@ def gestionRutinas(request):
     query = request.GET.get('search', '')
     
     if query:
-        rutinas = Rutina.objects.filter(nombre__icontains=query)
+        rutinas = Rutina.objects.filter(Nombre__icontains=query)
     else:
         rutinas = Rutina.objects.all()
     
-    if not rutinas:
-        mensaje = "No se encontraron rutinas."
-    else:
-        mensaje = None
+    mensaje = "No se encontraron rutinas." if not rutinas else None
     
     return render(request, "gestionRutinas.html", {"rutinas": rutinas, "mensaje": mensaje})
 
 def visualizarRutina(request, id):
     rutina = get_object_or_404(Rutina, id=id)
-
     return render(request, "visualizarRutina.html", {"rutina": rutina})
-
 
 def registrarRutina(request):
     if request.method == "POST":
         nombre = request.POST.get('txtNombre')
-        tipo_id = request.POST.get('txtTipo') 
+        tipo_id = request.POST.get('txtTipo')
         descripcion = request.POST.get('txtDescripcion')
-        frecuencia_id = request.POST.get('txtFrecuencia')
+        frecuencia = request.POST.get('txtFrecuencia')
         fecha_inicio = request.POST.get('txtFechaInicio')
         fecha_fin = request.POST.get('txtFechaFin')
         imagen = request.FILES.get('txtImagen')
@@ -65,49 +57,54 @@ def registrarRutina(request):
         objetivos = request.POST.get('txtObjetivos')
         instructor_id = request.POST.get('txtInstructor')
         cliente_id = request.POST.get('txtCliente')
+        print("El valor del id es: ",cliente_id)
 
+        # Procesar la imagen
+        imagen_nombre = None
         if imagen:
+            unique_id = uuid.uuid4().hex
+            file_extension = imagen.name.split('.')[-1]
+            file_name = f'{unique_id}.{file_extension}'
             image = Image.open(imagen)
             image = image.convert('RGB')
             thumb_io = io.BytesIO()
             image.save(thumb_io, 'JPEG')
-            
-            unique_id = uuid.uuid4().hex  # Genera un ID único en formato hexadecimal
-            file_extension = imagen.name.split('.')[-1]  # Obtiene la extensión del archivo original
-            file_name = f'{unique_id}.{file_extension}'  # Nombre del archivo con extensión
-            
-            # Guardar el archivo
-            thumb_file = default_storage.save(file_name, thumb_io)
-            
-            # Guardar solo el nombre del archivo con extensión
+            default_storage.save(file_name, thumb_io)
             imagen_nombre = file_name
-        else:
-            imagen_nombre = None
 
-        Rutina.objects.create(
-            nombre=nombre,
-            tipo_id=tipo_id,
-            descripcion=descripcion,
-            frecuencia_id=frecuencia_id,
-            fecha_inicio=parse_date(fecha_inicio),
-            fecha_fin=parse_date(fecha_fin),
-            imagen=imagen_nombre,
-            horas_recomendadas=horas_recomendadas,
-            objetivos=objetivos,
-            instructor_id=instructor_id,
-            cliente_id=cliente_id
+        rutina = Rutina.objects.create(
+            Nombre=nombre,
+            TipoID_id=tipo_id,
+            Descripcion=descripcion,
+            Frecuencia=frecuencia,
+            FechaInicio=parse_date(fecha_inicio),
+            FechaFin=parse_date(fecha_fin),
+            Imagen=imagen_nombre,
+            HorasRecomendadas=horas_recomendadas,
+            Objetivos=objetivos,
+            InstructorID_id=instructor_id,
+            ClienteID_id=cliente_id  # Usar ID del cliente aquí
         )
+
         return redirect('gestionRutinas')
 
-    frecuencias = Frecuencia.objects.all()
     instructores = Instructor.objects.all()
     tipos = TipoDeRutina.objects.all()
     clientes = Cliente.objects.all()
+
+    frecuencias = {}
+    for instructor in instructores:
+        try:
+            info_personal = InformacionPersonalInstructor.objects.get(InstructorID=instructor)
+            frecuencias[instructor.InstructorID] = info_personal.PreferenciaHorario
+        except InformacionPersonalInstructor.DoesNotExist:
+            frecuencias[instructor.InstructorID] = "No disponible"
+
     return render(request, "registrarRutina.html", {
-        "frecuencias": frecuencias, 
         "instructores": instructores, 
         "tipos": tipos,
-        "clientes": clientes
+        "clientes": clientes,
+        "frecuencias": frecuencias
     })
 
 def editarRutina(request, id):
@@ -117,7 +114,6 @@ def editarRutina(request, id):
         nombre = request.POST.get('txtNombre')
         tipo_id = request.POST.get('txtTipo')
         descripcion = request.POST.get('txtDescripcion')
-        frecuencia_id = request.POST.get('txtFrecuencia')
         fecha_inicio = request.POST.get('txtFechaInicio')
         fecha_fin = request.POST.get('txtFechaFin')
         imagen = request.FILES.get('txtImagen')
@@ -126,46 +122,44 @@ def editarRutina(request, id):
         instructor_id = request.POST.get('txtInstructor')
         cliente_id = request.POST.get('txtCliente')
 
-        rutina.nombre = nombre
-        rutina.tipo_id = tipo_id
-        rutina.descripcion = descripcion
-        rutina.frecuencia_id = frecuencia_id
-        rutina.fecha_inicio = parse_date(fecha_inicio)
-        rutina.fecha_fin = parse_date(fecha_fin)
+        rutina.Nombre = nombre
+        rutina.TipoID_id = tipo_id
+        rutina.Descripcion = descripcion
+        rutina.FechaInicio = parse_date(fecha_inicio)
+        rutina.FechaFin = parse_date(fecha_fin)
 
         if imagen:
+            unique_id = uuid.uuid4().hex
+            file_extension = imagen.name.split('.')[-1]
+            file_name = f'{unique_id}.{file_extension}'
             image = Image.open(imagen)
             image = image.convert('RGB')
             thumb_io = io.BytesIO()
             image.save(thumb_io, 'JPEG')
-
-            # Generar un nombre de archivo único usando UUID
-            unique_id = uuid.uuid4().hex
-            file_extension = imagen.name.split('.')[-1]  # Obtener la extensión del archivo original
-            file_name = f'{unique_id}.{file_extension}'  # Nombre del archivo con extensión
-            
-            # Guardar el archivo y obtener solo el nombre del archivo
             default_storage.save(file_name, thumb_io)
-            rutina.imagen = file_name  # Solo guardar el nombre del archivo
+            rutina.Imagen = file_name
 
-        rutina.horas_recomendadas = horas_recomendadas
-        rutina.objetivos = objetivos
-        rutina.instructor_id = instructor_id
-        rutina.cliente_id = cliente_id
+        rutina.Frecuencia = horas_recomendadas
+        rutina.HorasRecomendadas = horas_recomendadas
+        rutina.Objetivos = objetivos
+        rutina.InstructorID_id = instructor_id
+        rutina.ClienteID_id = cliente_id
         rutina.save()
 
         return redirect('gestionRutinas')
 
-    frecuencias = Frecuencia.objects.all()
     instructores = Instructor.objects.all()
     tipos = TipoDeRutina.objects.all()
     clientes = Cliente.objects.all()
+
+    frecuencias = {instructor.Informacionpersonalinstructor_set.first().PreferenciaHorario if instructor.Informacionpersonalinstructor_set.exists() else 'No disponible' for instructor in instructores}
+
     return render(request, "editarRutina.html", {
-        "frecuencias": frecuencias, 
         "instructores": instructores, 
         "tipos": tipos, 
         "clientes": clientes,
-        "rutina": rutina
+        "rutina": rutina,
+        "frecuencias": frecuencias
     })
 
 def eliminarRutina(request, id):

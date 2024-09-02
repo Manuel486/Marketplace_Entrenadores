@@ -5,7 +5,6 @@
 
 {% block body %}
 
-
 <main class="main">
     <div class="form-container">
         <h3 class="form-container__title">Agregar rutina</h3>
@@ -42,7 +41,7 @@
                     <label for="txtTipo" class="form__label">Tipo</label>
                     <select id="txtTipo" name="txtTipo" class="form__input" required>
                         {% for tipo in tipos %}
-                            <option value="{{ tipo.id }}">{{ tipo.nombre }}</option>
+                            <option value="{{ tipo.TipoDeRutinaID }}">{{ tipo.Nombre }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -50,7 +49,7 @@
                     <label for="txtFrecuencia" class="form__label">Frecuencia</label>
                     <select id="txtFrecuencia" name="txtFrecuencia" class="form__input" required>
                         {% for frecuencia in frecuencias %}
-                            <option value="{{ frecuencia.id }}">{{ frecuencia.nombre }}</option>
+                            <option value="{{ frecuencia }}">{{ frecuencia }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -60,7 +59,7 @@
                     <label for="txtInstructor" class="form__label">Instructor</label>
                     <select id="txtInstructor" name="txtInstructor" class="form__input" required>
                         {% for instructor in instructores %}
-                            <option value="{{ instructor.id }}">{{ instructor.nombres }} {{ instructor.apellidos }}</option>
+                            <option value="{{ instructor.InstructorID }}">{{ instructor.Nombres }} {{ instructor.Apellidos }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -76,13 +75,53 @@
                 </div>
                 <div class="form__field">
                     <label for="txtHorasRecomendadas" class="form__label">Horas Recomendadas</label>
-                    <input type="text" id="txtHorasRecomendadas" name="txtHorasRecomendadas" class="form__input" placeholder="Días Recomendados" required>
+                    <input type="text" id="txtHorasRecomendadas" name="txtHorasRecomendadas" class="form__input" placeholder="Horas Recomendadas" required>
                 </div>
             </div>
             <div class="form__row">
                 <div class="form__field">
                     <label for="txtObjetivos" class="form__label">Objetivos</label>
                     <textarea id="txtObjetivos" name="txtObjetivos" class="form__input" placeholder="Objetivos" rows="3" required></textarea>
+                </div>
+            </div>
+            <div class="form__row">
+                <div class="form__field">
+                    <label for="txtBicep" class="form__label">Bíceps</label>
+                    <input type="number" id="txtBicep" name="txtBicep" class="form__input" placeholder="Medida de bíceps">
+                </div>
+                <div class="form__field">
+                    <label for="txtTricep" class="form__label">Tríceps</label>
+                    <input type="number" id="txtTricep" name="txtTricep" class="form__input" placeholder="Medida de tríceps">
+                </div>
+            </div>
+            <div class="form__row">
+                <div class="form__field">
+                    <label for="txtPectorales" class="form__label">Pectorales</label>
+                    <input type="number" id="txtPectorales" name="txtPectorales" class="form__input" placeholder="Medida de pectorales">
+                </div>
+                <div class="form__field">
+                    <label for="txtDorsales" class="form__label">Dorsales</label>
+                    <input type="number" id="txtDorsales" name="txtDorsales" class="form__input" placeholder="Medida de dorsales">
+                </div>
+            </div>
+            <div class="form__row">
+                <div class="form__field">
+                    <label for="txtCintura" class="form__label">Cintura</label>
+                    <input type="number" id="txtCintura" name="txtCintura" class="form__input" placeholder="Medida de cintura">
+                </div>
+                <div class="form__field">
+                    <label for="txtGluteos" class="form__label">Glúteos</label>
+                    <input type="number" id="txtGluteos" name="txtGluteos" class="form__input" placeholder="Medida de glúteos">
+                </div>
+            </div>
+            <div class="form__row">
+                <div class="form__field">
+                    <label for="txtCuello" class="form__label">Cuello</label>
+                    <input type="number" id="txtCuello" name="txtCuello" class="form__input" placeholder="Medida de cuello">
+                </div>
+                <div class="form__field">
+                    <label for="txtEstado" class="form__label">Estado</label>
+                    <input type="text" id="txtEstado" name="txtEstado" class="form__input" placeholder="Estado">
                 </div>
             </div>
             <div class="form__row form__row--buttons">
@@ -108,12 +147,12 @@
         let clientsHTML = '';
         {% for cliente in clientes %}
             clientsHTML += `
-                <div class="client-card" onclick="selectClient('{{ cliente.id }}', '{{ cliente.usuario.nombre }} {{ cliente.usuario.apellido }}', '{{ cliente.talla }}', '{{ cliente.porcentaje_grasa_corporal }}', '{{ cliente.nivel_condicion_fisica }}', '{{ cliente.objetivo_principal }}')">
-                    <h4>{{ cliente.usuario.nombre }} {{ cliente.usuario.apellido }}</h4>
-                    <p>Talla: {{ cliente.talla }}</p>
-                    <p>Peso: {{ cliente.porcentaje_grasa_corporal }}</p>
-                    <p>Nivel: {{ cliente.nivel_condicion_fisica }}</p>
-                    <p>Objetivo: {{ cliente.objetivo_principal }}</p>
+                <div class="client-card" onclick="selectClient('{{ cliente.ClienteID.UsuarioID }}', '{{ cliente.ClienteID.Nombre }} {{ cliente.ClienteID.Apellido }}')">
+                    <h4>{{ cliente.ClienteID.Nombre }} {{ cliente.ClienteID.Apellido }}</h4>
+                    <p>Talla: {{ cliente.Talla }}</p>
+                    <p>Peso: {{ cliente.PorcentajeGrasaCorporal }}</p>
+                    <p>Nivel: {{ cliente.NivelCondicionFisica }}</p>
+                    <p>Objetivo: {{ cliente.ObjetivoPrincipal }}</p>
                 </div>
             `;
         {% endfor %}
@@ -135,7 +174,9 @@
         });
     }
 
-    function selectClient(clientId, clientName, talla, porcentajeGrasa, nivelCondicion, objetivo) {
+    function selectClient(clientId, clientName) {
+        console.log(clientId)
+        console.log(clientName)
         Swal.fire({
             title: 'Confirmar selección',
             text: `¿Está seguro que desea seleccionar al cliente ${clientName}?`,
@@ -164,6 +205,17 @@
             input.value = clientId;
             this.appendChild(input);
         }
+    });
+
+    document.getElementById('txtInstructor').addEventListener('change', function() {
+        const instructorId = this.value;
+        const frecuenciaField = document.getElementById('txtFrecuencia');
+        
+        fetch(`/getFrecuencia/${instructorId}/`)
+            .then(response => response.json())
+            .then(data => {
+                frecuenciaField.value = data.frecuencia || 'No disponible';
+            });
     });
 </script>
 {% endblock %}
