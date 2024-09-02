@@ -8,13 +8,6 @@ class TipoDeRutina(models.Model):
     def __str__(self):
         return self.nombre
 
-class Frecuencia(models.Model):
-    nombre = models.CharField(max_length=100)
-    descripcion = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return self.nombre
-
 class Local(models.Model):
     nombre = models.CharField(max_length=100)
     direccion = models.CharField(max_length=255)
@@ -40,6 +33,14 @@ class Instructor(models.Model):
 
     def __str__(self):
         return f"{self.nombres} {self.apellidos} - {self.especialidad} ({self.local})"
+
+class Frecuencia(models.Model):
+    nombre = models.CharField(max_length=100)
+    descripcion = models.TextField(blank=True, null=True)
+    instructor = models.ForeignKey(Instructor, on_delete=models.CASCADE, default=1)  
+
+    def __str__(self):
+        return f"{self.nombre} - {self.instructor.nombres} {self.instructor.apellidos}"
 
 class Cliente(models.Model):
     usuario = models.OneToOneField('Usuario', on_delete=models.CASCADE)
@@ -70,7 +71,7 @@ class Rutina(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, default=1)
 
     def __str__(self):
-        return f"{self.nombre} - {self.frecuencia} ({self.dias_recomendados})"
+        return f"{self.nombre} - {self.frecuencia.nombre} ({self.instructor})"
 
 class Dieta(models.Model):
     nombre = models.CharField(max_length=100)

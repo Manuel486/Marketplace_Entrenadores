@@ -61,7 +61,7 @@ def registrarRutina(request):
         fecha_inicio = request.POST.get('txtFechaInicio')
         fecha_fin = request.POST.get('txtFechaFin')
         imagen = request.FILES.get('txtImagen')
-        dias_recomendados = request.POST.get('txtDiasRecomendados')
+        horas_recomendadas = request.POST.get('txtHorasRecomendadas')
         objetivos = request.POST.get('txtObjetivos')
         instructor_id = request.POST.get('txtInstructor')
         cliente_id = request.POST.get('txtCliente')
@@ -92,7 +92,7 @@ def registrarRutina(request):
             fecha_inicio=parse_date(fecha_inicio),
             fecha_fin=parse_date(fecha_fin),
             imagen=imagen_nombre,
-            dias_recomendados=dias_recomendados,
+            horas_recomendadas=horas_recomendadas,
             objetivos=objetivos,
             instructor_id=instructor_id,
             cliente_id=cliente_id
@@ -121,7 +121,7 @@ def editarRutina(request, id):
         fecha_inicio = request.POST.get('txtFechaInicio')
         fecha_fin = request.POST.get('txtFechaFin')
         imagen = request.FILES.get('txtImagen')
-        dias_recomendados = request.POST.get('txtDiasRecomendados')
+        horas_recomendadas = request.POST.get('txtHorasRecomendadas')
         objetivos = request.POST.get('txtObjetivos')
         instructor_id = request.POST.get('txtInstructor')
         cliente_id = request.POST.get('txtCliente')
@@ -148,7 +148,7 @@ def editarRutina(request, id):
             default_storage.save(file_name, thumb_io)
             rutina.imagen = file_name  # Solo guardar el nombre del archivo
 
-        rutina.dias_recomendados = dias_recomendados
+        rutina.horas_recomendadas = horas_recomendadas
         rutina.objetivos = objetivos
         rutina.instructor_id = instructor_id
         rutina.cliente_id = cliente_id
