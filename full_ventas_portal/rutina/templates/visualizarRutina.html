@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Visualizar Rutina{% endblock %}
+{% block style %}../static/css/visualizarRutina.css{% endblock style %}
+
+{% block body %}
+<main class="main">
+    <div class="form-container">
+        <h3 class="form-container__title">Detalles de la Rutina</h3>
+        <div class="form">
+            <div class="form__row">
+                <div class="container__image">
+                    <img src="{{ rutina.imagen.url }}" alt="Imagen de la Rutina" class="form__image">
+                </div>
+                <div class="form__field">
+                    <label for="txtNombre" class="form__label">Nombre de la Rutina</label>
+                    <input type="text" id="txtNombre" name="txtNombre" class="form__input" value="{{ rutina.nombre }}" readonly>
+                </div>
+                <div class="form__field">
+                    <label for="txtCliente" class="form__label">Cliente</label>
+                    <input type="text" id="txtCliente" name="txtCliente" class="form__input" value="{{ rutina.cliente.usuario.nombre }} {{ rutina.cliente.usuario.apellido }}" readonly>
+                </div>
+            </div>
+            <div class="form__row">
+                <div class="form__field">
+                    <label for="txtDescripcion" class="form__label">Descripción</label>
+                    <textarea id="txtDescripcion" name="txtDescripcion" class="form__input" rows="3" readonly>{{ rutina.descripcion }}</textarea>
+                </div>
+            </div>
+            <div class="form__row">
+                <div class="form__field">
+                    <label for="txtTipo" class="form__label">Tipo de Rutina</label>
+                    <input type="text" id="txtTipo" name="txtTipo" class="form__input" value="{{ rutina.tipo.nombre }}" readonly>
+                    <small class="form__note">{{ rutina.tipo.descripcion }}</small>
+                </div>
+                <div class="form__field">
+                    <label for="txtFrecuencia" class="form__label">Frecuencia</label>
+                    <input type="text" id="txtFrecuencia" name="txtFrecuencia" class="form__input" value="{{ rutina.frecuencia.nombre }}" readonly>
+                    <small class="form__note">{{ rutina.frecuencia.descripcion }}</small>
+                </div>
+            </div>
+            <div class="form__row">
+                <div class="form__field">
+                    <label for="txtInstructor" class="form__label">Instructor</label>
+                    <input type="text" id="txtInstructor" name="txtInstructor" class="form__input" value="{{ rutina.instructor.nombres }} {{ rutina.instructor.apellidos }}" readonly>
+                    <small class="form__note">{{ rutina.instructor.especialidad }} en el local {{ rutina.instructor.local.nombre }}</small>
+                </div>
+                <div class="form__field">
+                    <label for="txtFechaInicio" class="form__label">Fecha de Inicio</label>
+                    <input type="date" id="txtFechaInicio" name="txtFechaInicio" class="form__input" value="{{ rutina.fecha_inicio|date:'Y-m-d'  }}" readonly>
+                </div>
+            </div>
+            <div class="form__row">
+                <div class="form__field">
+                    <label for="txtFechaFin" class="form__label">Fecha de Fin</label>
+                    <input type="date" id="txtFechaFin" name="txtFechaFin" class="form__input" value="{{ rutina.fecha_fin|date:'Y-m-d'  }}" readonly>
+                </div>
+                <div class="form__field">
+                    <label for="txtDiasRecomendados" class="form__label">Días Recomendados</label>
+                    <input type="text" id="txtDiasRecomendados" name="txtDiasRecomendados" class="form__input" value="{{ rutina.dias_recomendados }}" readonly>
+                </div>
+            </div>
+            <div class="form__row">
+                <div class="form__field">
+                    <label for="txtObjetivos" class="form__label">Objetivos</label>
+                    <textarea id="txtObjetivos" name="txtObjetivos" class="form__input" rows="3" readonly>{{ rutina.objetivos }}</textarea>
+                </div>
+            </div>
+            <div class="form__row form__row--buttons">
+                <button type="button" class="form__button form__button--back" onclick="window.history.back();">Regresar</button>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

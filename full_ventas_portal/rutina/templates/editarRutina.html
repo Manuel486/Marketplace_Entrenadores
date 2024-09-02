@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Rutina{% endblock %}
+{% block style %}../../static/css/registrarRutina.css{% endblock %}
+
+{% block body %}
+<main class="main">
+    <div class="form-container">
+        <h3 class="form-container__title">Editar rutina</h3>
+        <form class="form" action="{% url 'editarRutina' rutina.id %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form__row">
+                <div class="container__image">
+                    <img src="{{ rutina.imagen.url }}" alt="Imagen de rutina" class="form__image" id="imagePreview" >
+                </div>
+                <input type="file" id="file-input" name="txtImagen" class="form__file-input" onchange="previewImage(event)" accept=".jpg, .jpeg, .png">
+                <label for="file-input" class="form__file-label">
+                    Sube una imagen para la rutina (formatos aceptados: JPG, PNG)
+                </label>
+            </div>
+            <div class="form__row">
+                <div class="form__field">
+                    <label for="txtCliente" class="form__label">Cliente</label>
+                    <div class="form__input-group">
+                        <input type="text" id="txtCliente" name="txtCliente" value="{{ rutina.cliente.usuario.nombre }} {{ rutina.cliente.usuario.apellido }}" data-client-id="{{ rutina.cliente.id }}" class="form__input" placeholder="Seleccionar cliente" readonly required>                        
+                        <button type="button" class="form__button--popup" onclick="openClientSelection()">Seleccionar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="form__row">
+                <div class="form__field">
+                    <label for="txtNombre" class="form__label">Nombre</label>
+                    <input type="text" id="txtNombre" name="txtNombre" value="{{ rutina.nombre }}" class="form__input" placeholder="Ingresar nombre" maxlength="255" required>
+                </div>
+                <div class="form__field">
+                    <label for="txtDescripcion" class="form__label">Descripción</label>
+                    <textarea id="txtDescripcion" name="txtDescripcion" class="form__input" placeholder="Ingresar descripción" rows="3" required>{{ rutina.descripcion }}</textarea>
+                </div>
+            </div>
+            <div class="form__row">
+                <div class="form__field">
+                    <label for="txtTipo" class="form__label">Tipo</label>
+                    <select id="txtTipo" name="txtTipo" class="form__input" required>
+                        {% for tipo in tipos %}
+                            <option value="{{ tipo.id }}" {% if rutina.tipo.id == tipo.id %}selected{% endif %}>{{ tipo.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form__field">
+                    <label for="txtFrecuencia" class="form__label">Frecuencia</label>
+                    <select id="txtFrecuencia" name="txtFrecuencia" class="form__input" required>
+                        {% for frecuencia in frecuencias %}
+                            <option value="{{ frecuencia.id }}" {% if rutina.frecuencia.id == frecuencia.id %}selected{% endif %}>{{ frecuencia.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form__row">
+                <div class="form__field">
+                    <label for="txtInstructor" class="form__label">Instructor</label>
+                    <select id="txtInstructor" name="txtInstructor" class="form__input" required>
+                        {% for instructor in instructores %}
+                            <option value="{{ instructor.id }}" {% if rutina.instructor.id == instructor.id %}selected{% endif %}>{{ instructor.nombres }} {{ instructor.apellidos }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form__field">
+                    <label for="txtFechaInicio" class="form__label">Fecha de Inicio</label>
+                    <input type="date" id="txtFechaInicio" name="txtFechaInicio" value="{{ rutina.fecha_inicio|date:'Y-m-d' }}" class="form__input" required>
+                </div>
+            </div>
+            <div class="form__row">
+                <div class="form__field">
+                    <label for="txtFechaFin" class="form__label">Fecha de Fin</label>
+                    <input type="date" id="txtFechaFin" name="txtFechaFin" value="{{ rutina.fecha_fin|date:'Y-m-d' }}" class="form__input" required>
+                </div>
+                <div class="form__field">
+                    <label for="txtDiasRecomendados" class="form__label">Días Recomendados</label>
+                    <input type="text" id="txtDiasRecomendados" name="txtDiasRecomendados" value="{{ rutina.dias_recomendados }}" class="form__input" placeholder="Días Recomendados" required>
+                </div>
+            </div>
+            <div class="form__row">
+                <div class="form__field">
+                    <label for="txtObjetivos" class="form__label">Objetivos</label>
+                    <textarea id="txtObjetivos" name="txtObjetivos" class="form__input" placeholder="Objetivos" rows="3" required>{{ rutina.objetivos }}</textarea>
+                </div>
+            </div>
+            <div class="form__row form__row--buttons">
+                <button type="button" class="form__button form__button--cancel" onclick="window.history.back();">Cancelar</button>
+                <button type="submit" class="form__button form__button--submit">Guardar</button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script>
+    function previewImage(event) {
+        var input = event.target;
+        var reader = new FileReader();
+        reader.onload = function() {
+            var imagePreview = document.getElementById('imagePreview');
+            if (imagePreview) {
+                imagePreview.src = reader.result;
+            }
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+
+    function openClientSelection() {
+        let clientsHTML = '';
+        {% for cliente in clientes %}
+            clientsHTML += `
+                <div class="client-card" style="padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer;" onclick="selectClient('{{ cliente.id }}', '{{ cliente.usuario.nombre }} {{ cliente.usuario.apellido }}', '{{ cliente.talla }}', '{{ cliente.porcentaje_grasa_corporal }}', '{{ cliente.nivel_condicion_fisica }}', '{{ cliente.objetivo_principal }}')">
+                    <h4>{{ cliente.usuario.nombre }} {{ cliente.usuario.apellido }}</h4>
+                    <p>Talla: {{ cliente.talla }}</p>
+                    <p>Peso: {{ cliente.porcentaje_grasa_corporal }}</p>
+                    <p>Nivel: {{ cliente.nivel_condicion_fisica }}</p>
+                    <p>Objetivo: {{ cliente.objetivo_principal }}</p>
+                </div>
+            `;
+        {% endfor %}
+
+        Swal.fire({
+            title: 'Seleccionar Cliente',
+            html: `<div style="max-height: 400px; overflow-y: auto;">${clientsHTML}</div>`,
+            showCancelButton: true,
+            confirmButtonText: 'Aceptar',
+            cancelButtonText: 'Cancelar',
+            preConfirm: () => {
+                const selectedClientId = document.querySelector('input[name="selectedClientId"]');
+                if (!selectedClientId) {
+                    Swal.showValidationMessage('Debes seleccionar un cliente');
+                }
+                return selectedClientId ? selectedClientId.value : null;
+            }
+        });
+    }
+
+    function selectClient(clientId, clientName, talla, porcentajeGrasa, nivelCondicion, objetivo) {
+        Swal.fire({
+            title: 'Confirmar selección',
+            text: `¿Está seguro que desea seleccionar al cliente ${clientName}?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Aceptar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('txtCliente').value = clientName;
+                document.getElementById('txtCliente').dataset.clientId = clientId;
+                Swal.close(); // Cierra el alert de selección de cliente
+            }
+        });
+    }
+
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const clientId = document.getElementById('txtCliente').dataset.clientId;
+        if (!clientId) {
+            e.preventDefault();
+            Swal.fire('Error', 'Debes seleccionar un cliente antes de enviar el formulario', 'error');
+        } else {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'txtCliente';
+            input.value = clientId;
+            this.appendChild(input);
+        }
+    });
+</script>
+{% endblock %}
