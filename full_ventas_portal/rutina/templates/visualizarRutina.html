@@ -1,75 +1,93 @@
 {% extends "base.html" %}
 
 {% block title %}Visualizar Rutina{% endblock %}
-{% block style %}../static/css/visualizarRutina.css{% endblock style %}
+{% block style %}../../static/css/registrarRutina.css{% endblock style %}
 
 {% block body %}
 <main class="main">
     <div class="form-container">
-        <h3 class="form-container__title">Detalles de la Rutina</h3>
-        <div class="form">
+        <h3 class="form-container__title">Visualizar Rutina</h3>
+        <form class="form">
+            {% csrf_token %}
             <div class="form__row">
-                <div class="container__image">
-                    <img src="{{ rutina.imagen.url }}" alt="Imagen de la Rutina" class="form__image">
+                <div class="container__image--view">
+                    <img src="{{ rutina.Imagen.url }}" alt="Imagen de la rutina" class="form__image">
+                </div>
+            </div>
+            <div class="form__field">
+                <label for="ClienteID" class="form__label">Cliente</label>
+                <input type="text" id="ClienteID" class="form__input" placeholder="Seleccionar cliente" readonly value="{{ rutina.ClienteID.ClienteID.Nombre }} {{ rutina.ClienteID.ClienteID.Apellido }}">
+            </div>
+            <div class="form__row--description">
+                <div class="form__field">
+                    <label for="Nombre" class="form__label">Nombre</label>
+                    <input type="text" id="Nombre" class="form__input" placeholder="Nombre de la rutina" readonly value="{{ rutina.Nombre }}">
                 </div>
                 <div class="form__field">
-                    <label for="txtNombre" class="form__label">Nombre de la Rutina</label>
-                    <input type="text" id="txtNombre" name="txtNombre" class="form__input" value="{{ rutina.nombre }}" readonly>
-                </div>
-                <div class="form__field">
-                    <label for="txtCliente" class="form__label">Cliente</label>
-                    <input type="text" id="txtCliente" name="txtCliente" class="form__input" value="{{ rutina.cliente.usuario.nombre }} {{ rutina.cliente.usuario.apellido }}" readonly>
+                    <label for="Descripcion" class="form__label">Descripción</label>
+                    <textarea id="Descripcion" class="form__input" placeholder="Descripción de la rutina" rows="3" readonly>{{ rutina.Descripcion }}</textarea>
                 </div>
             </div>
             <div class="form__row">
                 <div class="form__field">
-                    <label for="txtDescripcion" class="form__label">Descripción</label>
-                    <textarea id="txtDescripcion" name="txtDescripcion" class="form__input" rows="3" readonly>{{ rutina.descripcion }}</textarea>
+                    <label for="TipoID" class="form__label">Tipo</label>
+                    <select id="TipoID" class="form__input" disabled>
+                        {% for tipo in tipos %}
+                            <option value="{{ tipo.TipoDeRutinaID }}" {% if tipo.TipoDeRutinaID == rutina.TipoID_id %}selected{% endif %}>{{ tipo.Nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form__field">
+                    <label for="Frecuencia" class="form__label">Frecuencia</label>
+                    <select id="Frecuencia" class="form__input" disabled>
+                        <option selected>{{ rutina.Frecuencia }}</option>
+                    </select>
                 </div>
             </div>
             <div class="form__row">
                 <div class="form__field">
-                    <label for="txtTipo" class="form__label">Tipo de Rutina</label>
-                    <input type="text" id="txtTipo" name="txtTipo" class="form__input" value="{{ rutina.tipo.nombre }}" readonly>
-                    <small class="form__note">{{ rutina.tipo.descripcion }}</small>
+                    <label for="InstructorID" class="form__label">Instructor</label>
+                    <select id="InstructorID" class="form__input" disabled>
+                        {% for instructor in instructores %}
+                            <option value="{{ instructor.InstructorID }}" {% if instructor.InstructorID == rutina.InstructorID_id %}selected{% endif %}>{{ instructor.Nombres }} {{ instructor.Apellidos }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 <div class="form__field">
-                    <label for="txtFrecuencia" class="form__label">Frecuencia</label>
-                    <input type="text" id="txtFrecuencia" name="txtFrecuencia" class="form__input" value="{{ rutina.frecuencia.nombre }}" readonly>
-                    <small class="form__note">{{ rutina.frecuencia.descripcion }}</small>
+                    <label for="FechaInicio" class="form__label">Fecha de Inicio</label>
+                    <input type="date" id="FechaInicio" class="form__input" readonly value="{{ rutina.FechaInicio|date:"Y-m-d" }}">
                 </div>
             </div>
             <div class="form__row">
                 <div class="form__field">
-                    <label for="txtInstructor" class="form__label">Instructor</label>
-                    <input type="text" id="txtInstructor" name="txtInstructor" class="form__input" value="{{ rutina.instructor.nombres }} {{ rutina.instructor.apellidos }}" readonly>
-                    <small class="form__note">{{ rutina.instructor.especialidad }} en el local {{ rutina.instructor.local.nombre }}</small>
+                    <label for="FechaFin" class="form__label">Fecha de Fin</label>
+                    <input type="date" id="FechaFin" class="form__input" readonly value="{{ rutina.FechaFin|date:"Y-m-d" }}">
                 </div>
                 <div class="form__field">
-                    <label for="txtFechaInicio" class="form__label">Fecha de Inicio</label>
-                    <input type="date" id="txtFechaInicio" name="txtFechaInicio" class="form__input" value="{{ rutina.fecha_inicio|date:'Y-m-d'  }}" readonly>
+                    <label for="HorasRecomendadas" class="form__label">Horas Recomendadas</label>
+                    <input type="text" id="HorasRecomendadas" class="form__input" placeholder="Horas recomendadas" readonly value="{{ rutina.HorasRecomendadas }}">
                 </div>
             </div>
-            <div class="form__row">
-                <div class="form__field">
-                    <label for="txtFechaFin" class="form__label">Fecha de Fin</label>
-                    <input type="date" id="txtFechaFin" name="txtFechaFin" class="form__input" value="{{ rutina.fecha_fin|date:'Y-m-d'  }}" readonly>
-                </div>
-                <div class="form__field">
-                    <label for="txtDiasRecomendados" class="form__label">Días Recomendados</label>
-                    <input type="text" id="txtDiasRecomendados" name="txtDiasRecomendados" class="form__input" value="{{ rutina.dias_recomendados }}" readonly>
-                </div>
-            </div>
-            <div class="form__row">
-                <div class="form__field">
-                    <label for="txtObjetivos" class="form__label">Objetivos</label>
-                    <textarea id="txtObjetivos" name="txtObjetivos" class="form__input" rows="3" readonly>{{ rutina.objetivos }}</textarea>
-                </div>
+            <div class="form__field">
+                <label class="form__label">Objetivos</label>
+                {% for objetivo in objetivos %}
+                        <div class="form__input-group">
+                            <div class="form__field">
+                                <p>- {{ objetivo.Nombre }}</p>
+                            </div>
+                            <div class="form__field">
+                                <input type="number" name="ObjetivosEstadoInicial{{ forloop.counter0 }}" step="0.01" class="form__input" placeholder="Estado inicial" readonly value="{{ objetivo.EstadoInicial }}">
+                            </div>
+                            <div class="form__field">
+                                <input type="number" name="ObjetivosEstadoFinal{{ forloop.counter0 }}" step="0.01" class="form__input" placeholder="Estado final" readonly value="{{ objetivo.EstadoFinal }}">
+                            </div>
+                        </div>
+                    {% endfor %}
             </div>
             <div class="form__row form__row--buttons">
-                <button type="button" class="form__button form__button--back" onclick="window.history.back();">Regresar</button>
+                <button type="button" class="form__button form__button--cancel" onclick="window.history.back();">Volver</button>
             </div>
-        </div>
+        </form>
     </div>
 </main>
 {% endblock %}

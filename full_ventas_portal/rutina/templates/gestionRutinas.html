@@ -50,7 +50,7 @@
                     <th class="content__table-header">Imagen</th>
                     <th class="content__table-header">Nombre</th>
                     <th class="content__table-header">Frecuencia</th>
-                    <th class="content__table-header">Días Recomendados</th>
+                    <th class="content__table-header">Horas Recomendadas</th>
                     <th class="content__table-header">Cliente</th>
                     <th class="content__table-header">Instructor</th>
                     <th class="content__table-header">Opciones</th>
@@ -61,22 +61,22 @@
                 <tr class="content__table-row">
                     <td class="content__table-data">{{ forloop.counter }}</td>
                     <td class="content__table-data">
-                        <img src="{{ r.imagen.url }}" alt="Imagen de la rutina" class="form__image" id="imagePreview" style="max-width: 75px; max-height: 75px;">
+                        <img src="{{ r.Imagen.url }}" alt="Imagen de la rutina" class="form__image" id="imagePreview" style="max-width: 75px; max-height: 75px;">
                     </td>
                     {{ rutina.imagen.url }}
-                    <td class="content__table-data">{{ r.nombre }}</td>
-                    <td class="content__table-data">{{ r.frecuencia }}</td>
-                    <td class="content__table-data">{{ r.dias_recomendados }}</td>
-                    <td class="content__table-data">{{ r.cliente.usuario.nombre }} {{ r.cliente.usuario.apellido }}</td>
-                    <td class="content__table-data">{{ r.instructor.nombres }} {{ r.instructor.apellidos }}</td>
+                    <td class="content__table-data">{{ r.Nombre }}</td>
+                    <td class="content__table-data">{{ r.Frecuencia }}</td>
+                    <td class="content__table-data">{{ r.HorasRecomendadas }}</td>
+                    <td class="content__table-data">{{ r.ClienteID.ClienteID.Nombre }} {{ r.ClienteID.ClienteID.Apellido  }}</td>
+                    <td class="content__table-data">{{ r.InstructorID.Nombres }} {{ r.InstructorID.Apellidos }}</td>
                     <td class="content__table-data content__table-data-icons">
-                        <a href="{% url 'visualizarRutina' r.id %}"  class="content__view-button">
+                        <a href="{% url 'visualizarRutina' r.RutinaID %}"  class="content__view-button">
                             <span class="iconify" data-icon="mdi:eye" data-inline="false"></span>
                         </a>
-                        <a href="{% url 'editarRutina' r.id %}" class="content__edit-button">
+                        <a href="{% url 'editarRutina' r.RutinaID %}" class="content__edit-button">
                             <span class="iconify" data-icon="mdi:pencil" data-inline="false"></span>
                         </a>
-                        <button onclick="confirmarEliminacion({{ r.id }})" class="content__delete-button">
+                        <button onclick="confirmarEliminacion({{ r.RutinaID }})" class="content__delete-button">
                             <span class="iconify" data-icon="mdi:trash-can" data-inline="false"></span>
                         </button>
                     </td>
@@ -89,6 +89,8 @@
         {% endif %}
     </div>
 </main>
+
+
 
 <script src="https://code.iconify.design/2/2.1.2/iconify.min.js"></script>
 <script>

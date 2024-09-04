@@ -1,107 +1,122 @@
 {% extends "base.html" %}
 
 {% block title %}Editar Rutina{% endblock %}
-{% block style %}../../static/css/registrarRutina.css{% endblock %}
+{% block style %}../../static/css/registrarRutina.css{% endblock style %}
+
 
 {% block body %}
 <main class="main">
     <div class="form-container">
         <h3 class="form-container__title">Editar rutina</h3>
-        <form class="form" action="{% url 'editarRutina' rutina.id %}" method="POST" enctype="multipart/form-data">
+        <form class="form" action="{% url 'editarRutina' rutina.RutinaID %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form__row">
                 <div class="container__image">
-                    <img src="{{ rutina.imagen.url }}" alt="Imagen de rutina" class="form__image" id="imagePreview" >
+                    <img src="{{ rutina.Imagen.url }}" alt="" class="form__image" id="imagePreview">
                 </div>
-                <input type="file" id="file-input" name="txtImagen" class="form__file-input" onchange="previewImage(event)" accept=".jpg, .jpeg, .png">
+                <input type="file" id="file-input" name="Imagen" class="form__file-input" onchange="previewImage(event)" accept=".jpg, .jpeg, .png">
                 <label for="file-input" class="form__file-label">
                     Sube una imagen para la rutina (formatos aceptados: JPG, PNG)
                 </label>
             </div>
             <div class="form__row">
                 <div class="form__field">
-                    <label for="txtCliente" class="form__label">Cliente</label>
-                    <div class="form__input-group">
-                        <input type="text" id="txtCliente" name="txtCliente" value="{{ rutina.cliente.usuario.nombre }} {{ rutina.cliente.usuario.apellido }}" data-client-id="{{ rutina.cliente.id }}" class="form__input" placeholder="Seleccionar cliente" readonly required>                        
-                        <button type="button" class="form__button--popup" onclick="openClientSelection()">Seleccionar</button>
-                    </div>
-                </div>
-            </div>
-            <div class="form__row">
-                <div class="form__field">
-                    <label for="txtNombre" class="form__label">Nombre</label>
-                    <input type="text" id="txtNombre" name="txtNombre" value="{{ rutina.nombre }}" class="form__input" placeholder="Ingresar nombre" maxlength="255" required>
-                </div>
-                <div class="form__field">
-                    <label for="txtDescripcion" class="form__label">Descripción</label>
-                    <textarea id="txtDescripcion" name="txtDescripcion" class="form__input" placeholder="Ingresar descripción" rows="3" required>{{ rutina.descripcion }}</textarea>
-                </div>
-            </div>
-            <div class="form__row">
-                <div class="form__field">
-                    <label for="txtTipo" class="form__label">Tipo</label>
-                    <select id="txtTipo" name="txtTipo" class="form__input" required>
+                    <label for="TipoID" class="form__label">Tipo</label>
+                    <select id="TipoID" name="TipoID" class="form__input" required>
                         {% for tipo in tipos %}
-                            <option value="{{ tipo.id }}" {% if rutina.tipo.id == tipo.id %}selected{% endif %}>{{ tipo.nombre }}</option>
+                            <option value="{{ tipo.TipoDeRutinaID }}" {% if tipo.TipoDeRutinaID == rutina.TipoID_id %}selected{% endif %}>{{ tipo.Nombre }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="form__field">
-                    <label for="txtFrecuencia" class="form__label">Frecuencia</label>
-                    <select id="txtFrecuencia" name="txtFrecuencia" class="form__input" required>
-                        {% for frecuencia in frecuencias %}
-                            <option value="{{ frecuencia.id }}" {% if rutina.frecuencia.id == frecuencia.id %}selected{% endif %}>{{ frecuencia.nombre }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-            <div class="form__row">
-                <div class="form__field">
-                    <label for="txtInstructor" class="form__label">Instructor</label>
-                    <select id="txtInstructor" name="txtInstructor" class="form__input" required>
+                    <label for="InstructorID" class="form__label">Instructor</label>
+                    <select id="InstructorID" name="InstructorID" class="form__input" required>
                         {% for instructor in instructores %}
-                            <option value="{{ instructor.id }}" {% if rutina.instructor.id == instructor.id %}selected{% endif %}>{{ instructor.nombres }} {{ instructor.apellidos }}</option>
+                            <option value="{{ instructor.InstructorID }}" {% if instructor.InstructorID == rutina.InstructorID_id %}selected{% endif %}>{{ instructor.Nombres }} {{ instructor.Apellidos }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form__row">
+                <div class="form__field">
+                    <label for="Frecuencia" class="form__label">Frecuencia</label>
+                    <select id="Frecuencia" name="Frecuencia" class="form__input" required>
+                        {% for frecuencia in frecuencias %}
+                            <option value="{{ frecuencia }}" {% if frecuencia == rutina.Frecuencia %}selected{% endif %}>{{ rutina.Frecuencia }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="form__field">
-                    <label for="txtFechaInicio" class="form__label">Fecha de Inicio</label>
-                    <input type="date" id="txtFechaInicio" name="txtFechaInicio" value="{{ rutina.fecha_inicio|date:'Y-m-d' }}" class="form__input" required>
+                    <label for="FechaInicio" class="form__label">Fecha de Inicio</label>
+                    <input type="date" id="FechaInicio" name="FechaInicio" class="form__input" required value="{{ rutina.FechaInicio|date:"Y-m-d" }}">
                 </div>
             </div>
-            <div class="form__row">
+                        <div class="form__row">
                 <div class="form__field">
-                    <label for="txtFechaFin" class="form__label">Fecha de Fin</label>
-                    <input type="date" id="txtFechaFin" name="txtFechaFin" value="{{ rutina.fecha_fin|date:'Y-m-d' }}" class="form__input" required>
+                    <label for="FechaFin" class="form__label">Fecha de Fin</label>
+                    <input type="date" id="FechaFin" name="FechaFin" class="form__input" required value="{{ rutina.FechaFin|date:"Y-m-d" }}">
                 </div>
                 <div class="form__field">
-                    <label for="txtHorasRecomendadas" class="form__label">Horas Recomendadas</label>
-                    <input type="text" id="txtHorasRecomendadas" name="txtHorasRecomendadas" value="{{ rutina.horas_recomendadas }}" class="form__input" placeholder="Días Recomendados" required>
+                    <label for="HorasRecomendadas" class="form__label">Horas Recomendadas</label>
+                    <input type="text" id="HorasRecomendadas" name="HorasRecomendadas" class="form__input" placeholder="Horas recomendadas" required value="{{ rutina.HorasRecomendadas }}">
                 </div>
             </div>
-            <div class="form__row">
-                <div class="form__field">
-                    <label for="txtObjetivos" class="form__label">Objetivos</label>
-                    <textarea id="txtObjetivos" name="txtObjetivos" class="form__input" placeholder="Objetivos" rows="3" required>{{ rutina.objetivos }}</textarea>
+            <div class="form__field">
+                <label for="ClienteID" class="form__label">Cliente</label>
+                <div class="form__input-group">
+                    <input type="text" id="ClienteID" name="ClienteID" class="form__input" placeholder="Seleccionar cliente" readonly required value="{{ rutina.ClienteID.ClienteID.Nombre }} {{ rutina.ClienteID.ClienteID.Apellido }}" data-client-id="{{ rutina.ClienteID.ClienteID.UsuarioID }}">
+                    <button type="button" class="form__button--popup" onclick="openClientSelection()">Seleccionar</button>
                 </div>
+            </div>
+            <div class="form__row--description">
+                <div class="form__field">
+                    <label for="Nombre" class="form__label">Nombre</label>
+                    <input type="text" id="Nombre" name="Nombre" class="form__input" placeholder="Ingresar nombre" maxlength="255" required value="{{ rutina.Nombre }}">
+                </div>
+                <div class="form__field">
+                    <label for="Descripcion" class="form__label">Descripción</label>
+                    <textarea id="Descripcion" name="Descripcion" class="form__input" placeholder="Ingresar descripción" rows="3" required>{{ rutina.Descripcion }}</textarea>
+                </div>
+            </div>
+            <div class="form__field" id="objectives-container">
+                <label class="form__label">Objetivos</label>
+                <div class="form__input-group-objectives">
+                    <p>Agregar dinámicamente los objetivos según el tipo de rutina.</p>
+                    <!-- Los objetivos se agregarán dinámicamente aquí -->
+                    <button type="button" class="form__button--popup" onclick="addObjective()">Agregar Objetivo</button>
+                </div>
+                <!-- Renderizar los objetivos existentes -->
+                {% for objetivo in objetivos %}
+                    <div class="form__input-group">
+                        <div class="form__field">
+                            <input type="text" name="ObjetivosNombre{{ forloop.counter0 }}" class="form__input" placeholder="Nombre del objetivo" required value="{{ objetivo.Nombre }}">
+                        </div>
+                        <div class="form__field">
+                            <input type="number" name="ObjetivosEstadoInicial{{ forloop.counter0 }}" step="0.01" class="form__input" placeholder="Estado inicial" required value="{{ objetivo.EstadoInicial }}">
+                        </div>
+                        <div class="form__field">
+                            <input type="number" name="ObjetivosEstadoFinal{{ forloop.counter0 }}" step="0.01" class="form__input" placeholder="Estado final" required value="{{ objetivo.EstadoFinal }}">
+                        </div>
+                        <button type="button" class="form__button--remove-objective" onclick="removeObjective(this)">Eliminar</button>
+                    </div>
+                {% endfor %}
             </div>
             <div class="form__row form__row--buttons">
                 <button type="button" class="form__button form__button--cancel" onclick="window.history.back();">Cancelar</button>
-                <button type="submit" class="form__button form__button--submit">Guardar</button>
+                <button type="submit" class="form__button form__button--submit">Actualizar</button>
             </div>
         </form>
     </div>
 </main>
-
 <script>
+    let objectiveCount = {{ objetivos|length }};
+
     function previewImage(event) {
         var input = event.target;
         var reader = new FileReader();
         reader.onload = function() {
-            var imagePreview = document.getElementById('imagePreview');
-            if (imagePreview) {
-                imagePreview.src = reader.result;
-            }
+            var imagePreviewContainer = document.getElementById('imagePreview');
+            imagePreviewContainer.src = reader.result;
         };
         reader.readAsDataURL(input.files[0]);
     }
@@ -110,61 +125,309 @@
         let clientsHTML = '';
         {% for cliente in clientes %}
             clientsHTML += `
-                <div class="client-card" style="padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer;" onclick="selectClient('{{ cliente.id }}', '{{ cliente.usuario.nombre }} {{ cliente.usuario.apellido }}', '{{ cliente.talla }}', '{{ cliente.porcentaje_grasa_corporal }}', '{{ cliente.nivel_condicion_fisica }}', '{{ cliente.objetivo_principal }}')">
-                    <h4>{{ cliente.usuario.nombre }} {{ cliente.usuario.apellido }}</h4>
-                    <p>Talla: {{ cliente.talla }}</p>
-                    <p>Peso: {{ cliente.porcentaje_grasa_corporal }}</p>
-                    <p>Nivel: {{ cliente.nivel_condicion_fisica }}</p>
-                    <p>Objetivo: {{ cliente.objetivo_principal }}</p>
+                <div class="client-card" onclick="selectClient('{{ cliente.ClienteID.UsuarioID }}', '{{ cliente.ClienteID.Nombre }} {{ cliente.ClienteID.Apellido }}')">
+                    <h4>{{ cliente.ClienteID.Nombre }} {{ cliente.ClienteID.Apellido }}</h4>
+                    <p>Talla: {{ cliente.Talla }}</p>
+                    <p>Peso: {{ cliente.PorcentajeGrasaCorporal }}</p>
+                    <p>Nivel: {{ cliente.NivelCondicionFisica }}</p>
+                    <p>Objetivo: {{ cliente.ObjetivoPrincipal }}</p>
                 </div>
             `;
         {% endfor %}
 
         Swal.fire({
             title: 'Seleccionar Cliente',
-            html: `<div style="max-height: 400px; overflow-y: auto;">${clientsHTML}</div>`,
-            showCancelButton: true,
-            confirmButtonText: 'Aceptar',
-            cancelButtonText: 'Cancelar',
-            preConfirm: () => {
-                const selectedClientId = document.querySelector('input[name="selectedClientId"]');
-                if (!selectedClientId) {
-                    Swal.showValidationMessage('Debes seleccionar un cliente');
-                }
-                return selectedClientId ? selectedClientId.value : null;
-            }
-        });
-    }
-
-    function selectClient(clientId, clientName, talla, porcentajeGrasa, nivelCondicion, objetivo) {
-        Swal.fire({
-            title: 'Confirmar selección',
-            text: `¿Está seguro que desea seleccionar al cliente ${clientName}?`,
-            icon: 'question',
+            html: `<div style="max-height: 300px; overflow-y: auto;">${clientsHTML}</div>`,
+            width: 600,
             showCancelButton: true,
             confirmButtonText: 'Aceptar',
             cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('txtCliente').value = clientName;
-                document.getElementById('txtCliente').dataset.clientId = clientId;
-                Swal.close(); // Cierra el alert de selección de cliente
-            }
         });
     }
 
+    function selectClient(clientId, clientName) {
+        document.getElementById('ClienteID').value = clientName;
+        document.getElementById('ClienteID').dataset.clientId = clientId;
+        Swal.close();
+    }
+
+    function addObjective() {
+        const container = document.getElementById('objectives-container');
+        const newRow = document.createElement('div');
+        newRow.className = 'form__input-group';
+        newRow.innerHTML = `
+            <div class="form__field">
+                <input type="text" name="ObjetivosNombre${objectiveCount}" id="ObjetivoNombre${objectiveCount}" class="form__input" placeholder="Nombre del objetivo" required>
+            </div>
+            <div class="form__field">
+                <input type="number" name="ObjetivosEstadoInicial${objectiveCount}" id="EstadoInicial${objectiveCount}" step="0.01" class="form__input" placeholder="Estado inicial" required>
+            </div>
+            <div class="form__field">
+                <input type="number" name="ObjetivosEstadoFinal${objectiveCount}" id="EstadoFinal${objectiveCount}" step="0.01" class="form__input" placeholder="Estado final" required>
+            </div>
+            <button type="button" class="form__button--remove-objective" onclick="removeObjective(this)">Eliminar</button>
+        `;
+        container.appendChild(newRow);
+        objectiveCount++;
+    }
+
+    function removeObjective(button) {
+        button.parentElement.remove();
+    }
+
     document.querySelector('form').addEventListener('submit', function(e) {
-        const clientId = document.getElementById('txtCliente').dataset.clientId;
+        const tipoRutinaSelect = document.getElementById('TipoID');
+        const instructorSelect = document.getElementById('InstructorID');
+        const frecuenciaSelect = document.getElementById('Frecuencia');
+
+        console.log(tipoRutinaSelect.value)
+        console.log(instructorSelect.value)
+        console.log(frecuenciaSelect.value)
+
+        const clientId = document.getElementById('ClienteID').dataset.clientId;
+        
         if (!clientId) {
             e.preventDefault();
             Swal.fire('Error', 'Debes seleccionar un cliente antes de enviar el formulario', 'error');
         } else {
             const input = document.createElement('input');
             input.type = 'hidden';
-            input.name = 'txtCliente';
+            input.name = 'ClienteID';
             input.value = clientId;
             this.appendChild(input);
         }
     });
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Elementos del formulario
+        const tipoRutinaSelect = document.getElementById('TipoID');
+        const instructorSelect = document.getElementById('InstructorID');
+        const frecuenciaSelect = document.getElementById('Frecuencia');
+
+        const fechaInicioInput = document.getElementById('FechaInicio');
+        const fechaFinInput = document.getElementById('FechaFin');
+
+        // Inicialmente bloquear los selectores de Instructor y Frecuencia
+        // instructorSelect.disabled = true;
+        // frecuenciaSelect.disabled = true;
+
+        fechaInicioInput.addEventListener('keydown', function(e) {
+            e.preventDefault();
+        });
+
+        fechaFinInput.addEventListener('keydown', function(e) {
+            e.preventDefault();
+        });
+
+
+        // Evento cuando se selecciona un tipo de rutina
+        tipoRutinaSelect.addEventListener('change', function () {
+            const tipoRutinaID = this.value;
+
+            if (tipoRutinaID) {
+                // Desbloquear el selector de Instructor y limpiar las opciones
+                instructorSelect.disabled = false;
+                instructorSelect.innerHTML = ''; // Limpiar las opciones actuales
+                frecuenciaSelect.innerHTML = ''; // Limpiar las opciones actuales de frecuencia
+                frecuenciaSelect.disabled = true;
+                fechaInicioInput.disabled = true;
+                fechaFinInput.disabled = true;
+                
+                fechaInicioInput.value = '';
+                fechaFinInput.value = '';
+
+                // Agregar opción por defecto al selector de Instructor
+                const defaultOptionInstructor = document.createElement('option');
+                defaultOptionInstructor.textContent = 'Seleccionar instructor';
+                defaultOptionInstructor.disabled = true;
+                defaultOptionInstructor.selected = true;
+                defaultOptionInstructor.value = "";
+                instructorSelect.appendChild(defaultOptionInstructor);
+
+                // Agregar opción por defecto al selector de Frecuencia
+                const defaultOptionFrecuencia = document.createElement('option');
+                defaultOptionFrecuencia.textContent = 'Seleccionar una frecuencia';
+                defaultOptionFrecuencia.disabled = true;
+                defaultOptionFrecuencia.selected = true;
+                defaultOptionFrecuencia.value = "";
+                frecuenciaSelect.appendChild(defaultOptionFrecuencia);
+
+
+                // Hacer una solicitud AJAX para obtener los instructores filtrados por especialidad
+                fetch(`/obtener-instructores/?tipo_rutina_id=${tipoRutinaID}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(function (instructor) {
+                            const option = document.createElement('option');
+                            option.value = instructor.id;
+                            option.textContent = instructor.nombre;
+                            instructorSelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching instructors:', error));
+            } else {
+                // Si no hay un tipo de rutina seleccionado, bloquear el selector de Instructor
+                instructorSelect.disabled = true;
+                frecuenciaSelect.disabled = true;
+            }
+        });
+
+        // Evento cuando se selecciona un instructor
+        instructorSelect.addEventListener('change', function () {
+            const instructorID = this.value;
+
+            if (instructorID) {
+                // Desbloquear el selector de Frecuencia y limpiar las opciones
+                frecuenciaSelect.disabled = false;
+                frecuenciaSelect.innerHTML = ''; // Limpiar las opciones actuales
+                fechaInicioInput.disabled = true;
+                fechaFinInput.disabled = true;
+
+                fechaInicioInput.value = '';
+                fechaFinInput.value = '';
+
+                // Agregar opción por defecto para frecuencia
+                const defaultOptionFrecuencia = document.createElement('option');
+                defaultOptionFrecuencia.textContent = 'Seleccionar una frecuencia';
+                defaultOptionFrecuencia.disabled = true;
+                defaultOptionFrecuencia.selected = true;
+                defaultOptionFrecuencia.value = "";
+                frecuenciaSelect.appendChild(defaultOptionFrecuencia);
+
+                // Hacer una solicitud AJAX para obtener las frecuencias basadas en la preferencia de horario del instructor
+                fetch(`/obtener-frecuencias/?instructor_id=${instructorID}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(function (frecuencia) {
+                            const option = document.createElement('option');
+                            option.value = frecuencia.trim();
+                            option.textContent = frecuencia.trim();
+                            frecuenciaSelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching frequencies:', error));
+            } else {
+                // Si no hay un instructor seleccionado, bloquear el selector de Frecuencia
+                frecuenciaSelect.disabled = true;
+            }
+        });
+
+        // Evento cuando selecciona una frecuencia - no estoy trabajando con la restricción de fecha
+        frecuenciaSelect.addEventListener('change', function () {
+            today = new Date().toISOString().split('T')[0];
+            fechaInicioInput.disabled = false;
+            fechaFinInput.disabled = false;
+            fechaFinInput.min = today;
+            fechaInicioInput.min = today;
+        })
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const frecuenciaSelect = document.getElementById('Frecuencia');
+        const instructorIdInput = document.getElementById('InstructorID');
+        const fechaInicioInput = document.getElementById('FechaInicio');
+        const fechaFinInput = document.getElementById('FechaFin');
+
+        let fechaInicioPicker;
+        let fechaFinPicker;
+
+        frecuenciaSelect.addEventListener('change', obtenerRangosDeFechas);
+        instructorIdInput.addEventListener('change', obtenerRangosDeFechas);
+
+        function obtenerRangosDeFechas() {
+            const frecuencia = frecuenciaSelect.value;
+            const instructorId = instructorIdInput.value;
+            const rutinaId = {{ rutina.RutinaID }}
+            if (frecuencia && instructorId) {
+                fetch(`/obtener_rangos_de_fechas_excluyendo/?frecuencia=${frecuencia}&instructor_id=${instructorId}&rutina_id=${rutinaId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const rangosDeFechas = data.rangos_de_fechas;
+                        ajustarDisponibilidadFechas(rangosDeFechas);
+                    })
+                    .catch(error => console.error('Error fetching date ranges:', error));
+            }
+        }
+
+        function ajustarDisponibilidadFechas(rangosDeFechas) {
+
+            fechaInicioInput.disabled = false;
+            fechaFinInput.disabled = false;
+
+            const ocupadas = rangosDeFechas.map(rango => ({
+                from: new Date(rango.fecha_inicio),
+                to: new Date(rango.fecha_fin)
+            }));
+
+            function isDateBlocked(date) {
+                return ocupadas.some(rango => date >= rango.from && date <= rango.to);
+            }
+
+            if (fechaInicioPicker) {
+                fechaInicioPicker.destroy();
+            }
+
+            const today = new Date();
+
+            fechaInicioPicker = new Pikaday({
+                field: fechaInicioInput,
+                minDate: today,
+                disableDayFn: isDateBlocked,
+                i18n: {
+                    previousMonth: 'Mes anterior',
+                    nextMonth: 'Mes siguiente',
+                    months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                    weekdays: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                    weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Juv', 'Vie', 'Sáb']
+                },
+                onSelect: function (date) {
+                    fechaFinPicker.setMinDate(date);
+                }
+            });
+
+            if (fechaFinPicker) {
+                fechaFinPicker.destroy();
+            }
+
+            fechaFinPicker = new Pikaday({
+                field: fechaFinInput,
+                minDate: today,
+                disableDayFn: isDateBlocked,
+                i18n: {
+                    previousMonth: 'Mes anterior',
+                    nextMonth: 'Mes siguiente',
+                    months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                    weekdays: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                    weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Juv', 'Vie', 'Sáb']
+                }
+            });
+
+            fechaInicioInput.placeholder = 'Ingrese la fecha de inicio';
+            fechaFinInput.placeholder = 'Ingrese la fecha de fin';
+        }
+    });
+</script>
+<style>
+    /* Ocultar el icono del calendario en los navegadores basados en WebKit (Chrome, Safari) */
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        display: none;
+    }
+
+    /* Ocultar el icono del calendario en Firefox */
+    input[type="date"]::-moz-calendar-picker-indicator {
+        display: none;
+    }
+
+    /* Ocultar el icono del calendario en Edge */
+    input[type="date"]::-ms-calendar-picker-indicator {
+        display: none;
+    }
+
+    /* Ocultar el icono del calendario en Opera */
+    input[type="date"]::-o-calendar-picker-indicator {
+        display: none;
+    }
+</style>
 {% endblock %}
