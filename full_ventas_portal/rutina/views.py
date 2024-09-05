@@ -77,7 +77,6 @@ def registrarRutina(request):
         fecha_inicio = request.POST.get('FechaInicio')
         fecha_fin = request.POST.get('FechaFin')
         imagen = request.FILES.get('Imagen')
-        horas_recomendadas = request.POST.get('HorasRecomendadas')
         instructor_id = request.POST.get('InstructorID')
         cliente_id = request.POST.get('ClienteID')
 
@@ -104,7 +103,6 @@ def registrarRutina(request):
             FechaInicio=parse_date(fecha_inicio),
             FechaFin=parse_date(fecha_fin),
             Imagen=imagen_nombre,
-            HorasRecomendadas=horas_recomendadas,
             InstructorID_id=instructor_id,
             ClienteID_id=cliente_id
         )
@@ -155,7 +153,6 @@ def editarRutina(request, id):
         fecha_inicio = request.POST.get('FechaInicio')
         fecha_fin = request.POST.get('FechaFin')
         imagen = request.FILES.get('Imagen')
-        horas_recomendadas = request.POST.get('HorasRecomendadas')
         instructor_id = request.POST.get('InstructorID')
         cliente_id = request.POST.get('ClienteID')
 
@@ -192,7 +189,6 @@ def editarRutina(request, id):
             default_storage.save(file_name, thumb_io)
             rutina.Imagen = file_name
 
-        rutina.HorasRecomendadas = horas_recomendadas
         rutina.InstructorID = instructor
         rutina.ClienteID = cliente
         rutina.save()

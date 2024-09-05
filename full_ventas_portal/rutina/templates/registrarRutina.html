@@ -58,10 +58,6 @@
                     <label for="FechaFin" class="form__label">Fecha de Fin</label>
                     <input type="date" id="FechaFin" name="FechaFin" class="form__input" required disabled>
                 </div>
-                <div class="form__field">
-                    <label for="HorasRecomendadas" class="form__label">Horas Recomendadas</label>
-                    <input type="text" id="HorasRecomendadas" name="HorasRecomendadas" class="form__input" placeholder="Horas recomendadas" required>
-                </div>
             </div>
             <div class="form__field">
                 <label for="ClienteID" class="form__label">Cliente</label>
@@ -148,10 +144,10 @@
                 <input type="text" name="ObjetivosNombre${objectiveCount}" id="ObjetivoNombre${objectiveCount}" class="form__input" placeholder="Nombre del objetivo" required>
             </div>
             <div class="form__field">
-                <input type="number" name="ObjetivosEstadoInicial${objectiveCount}" id="EstadoInicial${objectiveCount}" step="0.01" class="form__input" placeholder="Estado inicial" required>
+                <input type="text" name="ObjetivosEstadoInicial${objectiveCount}" id="EstadoInicial${objectiveCount}" step="0.01" class="form__input" placeholder="Estado inicial" required>
             </div>
             <div class="form__field">
-                <input type="number" name="ObjetivosEstadoFinal${objectiveCount}" id="EstadoFinal${objectiveCount}" step="0.01" class="form__input" placeholder="Estado final" required>
+                <input type="text" name="ObjetivosEstadoFinal${objectiveCount}" id="EstadoFinal${objectiveCount}" step="0.01" class="form__input" placeholder="Estado final" required>
             </div>
             <button type="button" class="form__button--remove-objective" onclick="removeObjective(this)">Eliminar</button>
         `;

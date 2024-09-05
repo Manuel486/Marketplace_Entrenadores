@@ -56,10 +56,6 @@
                     <label for="FechaFin" class="form__label">Fecha de Fin</label>
                     <input type="date" id="FechaFin" name="FechaFin" class="form__input" required value="{{ rutina.FechaFin|date:"Y-m-d" }}">
                 </div>
-                <div class="form__field">
-                    <label for="HorasRecomendadas" class="form__label">Horas Recomendadas</label>
-                    <input type="text" id="HorasRecomendadas" name="HorasRecomendadas" class="form__input" placeholder="Horas recomendadas" required value="{{ rutina.HorasRecomendadas }}">
-                </div>
             </div>
             <div class="form__field">
                 <label for="ClienteID" class="form__label">Cliente</label>
@@ -92,10 +88,10 @@
                             <input type="text" name="ObjetivosNombre{{ forloop.counter0 }}" class="form__input" placeholder="Nombre del objetivo" required value="{{ objetivo.Nombre }}">
                         </div>
                         <div class="form__field">
-                            <input type="number" name="ObjetivosEstadoInicial{{ forloop.counter0 }}" step="0.01" class="form__input" placeholder="Estado inicial" required value="{{ objetivo.EstadoInicial }}">
+                            <input type="text" name="ObjetivosEstadoInicial{{ forloop.counter0 }}" step="0.01" class="form__input" placeholder="Estado inicial" required value="{{ objetivo.EstadoInicial }}">
                         </div>
                         <div class="form__field">
-                            <input type="number" name="ObjetivosEstadoFinal{{ forloop.counter0 }}" step="0.01" class="form__input" placeholder="Estado final" required value="{{ objetivo.EstadoFinal }}">
+                            <input type="text" name="ObjetivosEstadoFinal{{ forloop.counter0 }}" step="0.01" class="form__input" placeholder="Estado final" required value="{{ objetivo.EstadoFinal }}">
                         </div>
                         <button type="button" class="form__button--remove-objective" onclick="removeObjective(this)">Eliminar</button>
                     </div>

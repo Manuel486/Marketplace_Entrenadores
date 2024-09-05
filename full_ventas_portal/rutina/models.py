@@ -132,7 +132,6 @@ class Rutina(models.Model):
     FechaInicio = models.DateField(db_column='FechaInicio')
     FechaFin = models.DateField(db_column='FechaFin')
     Imagen = models.ImageField(upload_to='imagenes/', blank=True, null=True, db_column='Imagen')
-    HorasRecomendadas = models.CharField(max_length=50, db_column='HorasRecomendadas')
     InstructorID = models.ForeignKey(Instructor, on_delete=models.CASCADE, db_column='InstructorID')
     ClienteID = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True, db_column='ClienteID')
 
@@ -145,8 +144,8 @@ class Rutina(models.Model):
 class Objetivo(models.Model):
     ObjetivoID = models.AutoField(primary_key=True, db_column='ObjetivoID')
     Nombre = models.CharField(max_length=255, db_column='Nombre')
-    EstadoInicial = models.DecimalField(max_digits=5, decimal_places=2, db_column='EstadoInicial')
-    EstadoFinal = models.DecimalField(max_digits=5, decimal_places=2, db_column='EstadoFinal')
+    EstadoInicial = models.CharField(max_length=50, db_column='EstadoInicial')
+    EstadoFinal = models.CharField(max_length=50, db_column='EstadoFinal')
     RutinaID = models.ForeignKey(Rutina, on_delete=models.CASCADE, related_name='objetivos', db_column='RutinaID')
 
     def __str__(self):
