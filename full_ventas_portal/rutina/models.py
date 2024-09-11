@@ -31,6 +31,17 @@ class TipoDeRutina(models.Model):
     class Meta:
         db_table = 'TipoDeRutina'
 
+class MetaPredeterminada(models.Model):
+    MetaPredeterminadaID = models.AutoField(primary_key=True, db_column='MetaPredeterminadaID')
+    Nombre = models.CharField(max_length=100, db_column='Nombre')
+    TipoDeRutinaID = models.ForeignKey(TipoDeRutina, on_delete=models.CASCADE, db_column='TipoDeRutinaID')
+
+    def __str__(self):
+            return self.Nombre
+    
+    class Meta:
+        db_table = 'MetaPredeterminada'
+
 class Local(models.Model):
     LocalID = models.AutoField(primary_key=True, db_column='LocalID')
     Nombre = models.CharField(max_length=100, db_column='Nombre')
@@ -131,9 +142,11 @@ class Rutina(models.Model):
     Frecuencia = models.CharField(max_length=50, db_column='Frecuencia')
     FechaInicio = models.DateField(db_column='FechaInicio')
     FechaFin = models.DateField(db_column='FechaFin')
-    Imagen = models.ImageField(upload_to='imagenes/', blank=True, null=True, db_column='Imagen')
+    Imagen1 = models.ImageField(upload_to='imagenes/', blank=True, null=True, db_column='Imagen1')
+    Imagen2 = models.ImageField(upload_to='imagenes/', blank=True, null=True, db_column='Imagen2')
     InstructorID = models.ForeignKey(Instructor, on_delete=models.CASCADE, db_column='InstructorID')
     ClienteID = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True, db_column='ClienteID')
+    Objetivos = models.CharField(max_length=255, db_column='Objetivos')
 
     def __str__(self):
         return f"{self.Nombre} - {self.Frecuencia} ({self.InstructorID})"
@@ -141,18 +154,18 @@ class Rutina(models.Model):
     class Meta:
         db_table = 'Rutina'
 
-class Objetivo(models.Model):
-    ObjetivoID = models.AutoField(primary_key=True, db_column='ObjetivoID')
+class Meta(models.Model):
+    MetaID = models.AutoField(primary_key=True, db_column='MetaID')
     Nombre = models.CharField(max_length=255, db_column='Nombre')
-    EstadoInicial = models.CharField(max_length=50, db_column='EstadoInicial')
-    EstadoFinal = models.CharField(max_length=50, db_column='EstadoFinal')
+    EstadoInicial = models.DecimalField(max_digits=5, decimal_places=2, db_column='EstadoInicial')
+    EstadoFinal = models.DecimalField(max_digits=5, decimal_places=2, db_column='EstadoFinal')
     RutinaID = models.ForeignKey(Rutina, on_delete=models.CASCADE, related_name='objetivos', db_column='RutinaID')
 
     def __str__(self):
         return f"{self.Nombre} (Inicial: {self.EstadoInicial}, Final: {self.EstadoFinal})"
 
     class Meta:
-        db_table = 'Objetivo'
+        db_table = 'Meta'
 
 class Usuario(models.Model):
     TIPO_CHOICES = [

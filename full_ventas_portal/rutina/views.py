@@ -2,10 +2,11 @@ import uuid
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.files.storage import default_storage
 from PIL import Image
-from .models import Rutina, TipoDeRutina, Usuario, Cliente, Instructor, Objetivo, InformacionPersonalInstructor, Horario
+from .models import Rutina, TipoDeRutina, Usuario, Cliente, Instructor, Meta, Horario,MetaPredeterminada
 from django.utils.dateparse import parse_date
 import io
 from datetime import datetime, timedelta
+from decimal import Decimal
 
 def index(request):
     return redirect('login')
@@ -18,19 +19,15 @@ def login(request):
         try:
             usuario = Usuario.objects.get(Username=username)
             
-            # Verificación de contraseña sin hash
             if password == usuario.Password and usuario.Tipo == "Cliente":
-                return redirect('menu')
+                return redirect('gestionRutinas')
             else:
-                return render(request, 'login.html', {'error': 'Usuario o contraseña no válido'})
+                return render(request, 'auth/login.html', {'error': 'Usuario o contraseña no válido'})
 
         except Usuario.DoesNotExist:
-            return render(request, 'login.html', {'error': 'Usuario o contraseña no válido'})
+            return render(request, 'auth/login.html', {'error': 'Usuario o contraseña no válido'})
 
-    return render(request, 'login.html')
-
-def menu(request):
-    return render(request, 'menu.html')
+    return render(request, 'auth/login.html')
 
 def gestionRutinas(request):
     query = request.GET.get('search', '')
@@ -44,25 +41,31 @@ def gestionRutinas(request):
         mensaje = "No se encontraron rutinas."
     else:
         mensaje = None
-    
-    return render(request, "gestionRutinas.html", {"rutinas": rutinas, "mensaje": mensaje})
+
+    for rutina in rutinas:
+        imagen1 = rutina.Imagen1
+        if imagen1 and imagen1.name:
+            print(f"Rutina ID: {rutina.RutinaID}")
+            print("URL:", imagen1.url)
+            print("Nombre:", imagen1.name)
+            print("Path:", imagen1.path)
+        else:
+            print(f"Rutina ID: {rutina.RutinaID} no tiene imagen1 asociada.")
+        print("-----")
+    return render(request, "admin/gestionRutinas.html", {"rutinas": rutinas, "mensaje": mensaje})
 
 def visualizarRutina(request, id):
-    # Obtener la instancia de Rutina usando el ID proporcionado
     rutina = get_object_or_404(Rutina, RutinaID=id)
     
-    # Obtener los objetivos asociados a la rutina
-    objetivos = Objetivo.objects.filter(RutinaID=rutina)
-    
-    # Obtener los datos adicionales necesarios para mostrar en la plantilla
+    metas = Meta.objects.filter(RutinaID=rutina)
+
     instructores = Instructor.objects.all()
     tipos = TipoDeRutina.objects.all()
     clientes = Cliente.objects.all()
     
-    # Renderizar la plantilla con los datos necesarios
-    return render(request, "visualizarRutina.html", {
+    return render(request, "admin/visualizarRutina.html", {
         "rutina": rutina,
-        "objetivos": objetivos,
+        "metas": metas,
         "instructores": instructores,
         "tipos": tipos,
         "clientes": clientes
@@ -76,24 +79,41 @@ def registrarRutina(request):
         frecuencia = request.POST.get('Frecuencia')
         fecha_inicio = request.POST.get('FechaInicio')
         fecha_fin = request.POST.get('FechaFin')
-        imagen = request.FILES.get('Imagen')
+        imagen1 = request.FILES.get('Imagen1')
+        imagen2 = request.FILES.get('Imagen2')
         instructor_id = request.POST.get('InstructorID')
         cliente_id = request.POST.get('ClienteID')
+        objetivos = request.POST.get('Objetivos')
 
-        if imagen:
-            image = Image.open(imagen)
+        if imagen1:
+            image = Image.open(imagen1)
             image = image.convert('RGB')
             thumb_io = io.BytesIO()
             image.save(thumb_io, 'JPEG')
 
             unique_id = uuid.uuid4().hex
-            file_extension = imagen.name.split('.')[-1]
+            file_extension = imagen1.name.split('.')[-1]
             file_name = f'{unique_id}.{file_extension}'
             
             default_storage.save(file_name, thumb_io)
-            imagen_nombre = file_name
+            imagen_nombre1 = file_name
         else:
-            imagen_nombre = None
+            imagen_nombre1 = None
+
+        if imagen2:
+            image = Image.open(imagen2)
+            image = image.convert('RGB')
+            thumb_io = io.BytesIO()
+            image.save(thumb_io, 'JPEG')
+
+            unique_id = uuid.uuid4().hex
+            file_extension = imagen2.name.split('.')[-1]
+            file_name = f'{unique_id}.{file_extension}'
+            
+            default_storage.save(file_name, thumb_io)
+            imagen_nombre2 = file_name
+        else:
+            imagen_nombre2 = None
 
         rutina = Rutina.objects.create(
             Nombre=nombre,
@@ -102,23 +122,25 @@ def registrarRutina(request):
             Frecuencia=frecuencia,
             FechaInicio=parse_date(fecha_inicio),
             FechaFin=parse_date(fecha_fin),
-            Imagen=imagen_nombre,
+            Imagen1=imagen_nombre1,
+            Imagen2=imagen_nombre2,
             InstructorID_id=instructor_id,
-            ClienteID_id=cliente_id
+            ClienteID_id=cliente_id,
+            Objetivos = objetivos
         )
 
-        # Crear Objetivos asociados a la rutina
         i = 0
         while True:
-            nombre_objetivo = request.POST.get(f'ObjetivosNombre{i}')
-            if not nombre_objetivo:
+            nombre_meta = request.POST.get(f'MetaNombre{i}')
+            print("LA META ES:::",nombre_meta)
+            if not nombre_meta:
                 break
 
-            estado_inicial = float(request.POST.get(f'ObjetivosEstadoInicial{i}', 0.0))
-            estado_final = float(request.POST.get(f'ObjetivosEstadoFinal{i}', 0.0))
+            estado_inicial = Decimal(request.POST.get(f'MetaEstadoInicial{i}'))
+            estado_final = Decimal(request.POST.get(f'MetaEstadoFinal{i}'))
 
-            Objetivo.objects.create(
-                Nombre=nombre_objetivo,
+            Meta.objects.create(
+                Nombre=nombre_meta,
                 EstadoInicial=estado_inicial,
                 EstadoFinal=estado_final,
                 RutinaID=rutina
@@ -128,14 +150,13 @@ def registrarRutina(request):
 
         return redirect('gestionRutinas')
 
-    # instructores = Instructor.objects.all()
     instructores = []
     tipos = TipoDeRutina.objects.all()
     clientes = Cliente.objects.all()
     
     frecuencias = []
 
-    return render(request, "registrarRutina.html", {
+    return render(request, "admin/registrarRutina.html", {
         "instructores": instructores, 
         "tipos": tipos,
         "clientes": clientes,
@@ -152,15 +173,15 @@ def editarRutina(request, id):
         frecuencia = request.POST.get('Frecuencia')
         fecha_inicio = request.POST.get('FechaInicio')
         fecha_fin = request.POST.get('FechaFin')
-        imagen = request.FILES.get('Imagen')
+        imagen1 = request.FILES.get('Imagen1')
+        imagen2 = request.FILES.get('Imagen2')
         instructor_id = request.POST.get('InstructorID')
         cliente_id = request.POST.get('ClienteID')
+        objetivos = request.POST.get('Objetivos')
 
-        # Initialize variables
         instructor = None
         cliente = None
-
-        # Obtener instancias de Instructor y Cliente
+        
         try:
             instructor = Instructor.objects.get(InstructorID=instructor_id)
             cliente = Cliente.objects.get(ClienteID=cliente_id)
@@ -176,38 +197,54 @@ def editarRutina(request, id):
         rutina.FechaInicio = parse_date(fecha_inicio)
         rutina.FechaFin = parse_date(fecha_fin)
 
-        if imagen:
-            image = Image.open(imagen)
+        if imagen1:
+            image = Image.open(imagen1)
             image = image.convert('RGB')
             thumb_io = io.BytesIO()
             image.save(thumb_io, 'JPEG')
 
             unique_id = uuid.uuid4().hex
-            file_extension = imagen.name.split('.')[-1]
+            file_extension = imagen1.name.split('.')[-1]
             file_name = f'{unique_id}.{file_extension}'
             
             default_storage.save(file_name, thumb_io)
-            rutina.Imagen = file_name
+            rutina.Imagen1 = file_name
+        else:
+            rutina.Imagen1 = None
+
+        if imagen2:
+            image = Image.open(imagen2)
+            image = image.convert('RGB')
+            thumb_io = io.BytesIO()
+            image.save(thumb_io, 'JPEG')
+
+            unique_id = uuid.uuid4().hex
+            file_extension = imagen2.name.split('.')[-1]
+            file_name = f'{unique_id}.{file_extension}'
+            
+            default_storage.save(file_name, thumb_io)
+            rutina.Imagen2 = file_name
+        else:
+            rutina.Imagen2 = None
 
         rutina.InstructorID = instructor
         rutina.ClienteID = cliente
+        rutina.Objetivos = objetivos
         rutina.save()
 
-        # Eliminar Objetivos existentes antes de añadir los nuevos
-        Objetivo.objects.filter(RutinaID=rutina).delete()
+        Meta.objects.filter(RutinaID=rutina).delete()
 
-        # Crear Objetivos asociados a la rutina
         i = 0
         while True:
-            nombre_objetivo = request.POST.get(f'ObjetivosNombre{i}')
-            if not nombre_objetivo:
+            nombre_meta = request.POST.get(f'MetaNombre{i}')
+            if not nombre_meta:
                 break
 
-            estado_inicial = float(request.POST.get(f'ObjetivosEstadoInicial{i}', 0.0))
-            estado_final = float(request.POST.get(f'ObjetivosEstadoFinal{i}', 0.0))
+            estado_inicial = Decimal(request.POST.get(f'MetaEstadoInicial{i}'))
+            estado_final = Decimal(request.POST.get(f'MetaEstadoFinal{i}'))
 
-            Objetivo.objects.create(
-                Nombre=nombre_objetivo,
+            Meta.objects.create(
+                Nombre=nombre_meta,
                 EstadoInicial=estado_inicial,
                 EstadoFinal=estado_final,
                 RutinaID=rutina
@@ -224,7 +261,6 @@ def editarRutina(request, id):
     tipos = TipoDeRutina.objects.all()
     clientes = Cliente.objects.all()
     
-    # Obtener frecuencias basadas en el instructor actual
     frecuencias = []
     if rutina.InstructorID:
         horarios = Horario.objects.filter(InstructorID=rutina.InstructorID)
@@ -233,19 +269,15 @@ def editarRutina(request, id):
             for horario in horarios
         ]
 
-    # Obtener los objetivos asociados a la rutina
-    objetivos = Objetivo.objects.filter(RutinaID=rutina)
+    metas = Meta.objects.filter(RutinaID=rutina)
 
-    # Obtener los objetivos asociados a la rutina
-    objetivos = Objetivo.objects.filter(RutinaID=rutina)
-
-    return render(request, "editarRutina.html", {
+    return render(request, "admin/editarRutina.html", {
         "instructores": instructores, 
         "tipos": tipos, 
         "clientes": clientes,
         "rutina": rutina,
         "frecuencias": frecuencias,
-        "objetivos": objetivos
+        "metas": metas
     })
 
 
@@ -257,17 +289,33 @@ def eliminarRutina(request, id):
 
 from django.http import JsonResponse
 
+from django.http import JsonResponse
+from .models import MetaPredeterminada
+
+def obtener_metas_por_tipo_de_rutina(request):
+    tipo_rutina_id = request.GET.get('tipo_rutina_id')
+
+    if tipo_rutina_id:
+        metas_predeterminadas = MetaPredeterminada.objects.filter(TipoDeRutinaID_id=tipo_rutina_id).distinct()
+        
+        metas_por_rutina_data = [
+            {'id': meta_predeterminada.MetaPredeterminadaID, 'nombre': meta_predeterminada.Nombre}
+            for meta_predeterminada in metas_predeterminadas
+        ]
+        
+        return JsonResponse(metas_por_rutina_data, safe=False)
+    else:
+        return JsonResponse([], safe=False)
+
+    
 def obtener_instructores_por_especialidad(request):
     tipo_rutina_id = request.GET.get('tipo_rutina_id')
     
-    # Obtener la especialidad del tipo de rutina seleccionado
     tipo_rutina = TipoDeRutina.objects.get(pk=tipo_rutina_id)
     especialidad_id = tipo_rutina.EspecialidadID_id
 
-    # Filtrar instructores por la especialidad
     instructores = Instructor.objects.filter(Especialidad__EspecialidadID=especialidad_id).distinct()
 
-    # Construir la respuesta en formato JSON
     instructores_data = [
         {'id': instructor.InstructorID, 'nombre': f"{instructor.Nombres} {instructor.Apellidos}"}
         for instructor in instructores
@@ -279,17 +327,14 @@ def obtener_instructores_por_especialidad(request):
 def obtener_frecuencias_por_instructor(request):
     instructor_id = request.GET.get('instructor_id')
 
-    # Obtener el instructor seleccionado y sus horarios
     instructor = Instructor.objects.get(pk=instructor_id)
     horarios = Horario.objects.filter(InstructorID=instructor)
 
-    # Construir la lista de frecuencias formateadas
     frecuencias_data = [
         f"{horario.Dia}: {horario.HoraInicio.strftime('%H:%M')} - {horario.HoraFin.strftime('%H:%M')}"
         for horario in horarios
     ]
 
-    # Construir la respuesta en formato JSON
     return JsonResponse(frecuencias_data, safe=False)
 
 from django.http import JsonResponse
@@ -303,7 +348,6 @@ def obtener_rangos_de_fechas(request):
     if not instructor_id or not frecuencia:
         return JsonResponse({'error': 'Faltan parámetros'}, status=400)
 
-    # Obtener todas las rutinas con la misma frecuencia, horario e instructor
     rutinas = Rutina.objects.filter(
         InstructorID=instructor_id, 
         Frecuencia=frecuencia, 
@@ -322,18 +366,16 @@ def obtener_rangos_de_fechas(request):
 
 from django.http import JsonResponse
 from datetime import datetime, timedelta
-from .models import Rutina  # Ajusta esto según tu estructura de proyecto
+from .models import Rutina 
 
 def obtener_rangos_de_fechas_excluyendo(request):
     instructor_id = request.GET.get('instructor_id')
     frecuencia = request.GET.get('frecuencia')
-    rutina_id = request.GET.get('rutina_id')  # ID de la rutina que se está editando
+    rutina_id = request.GET.get('rutina_id')  
 
     if not instructor_id or not frecuencia:
         return JsonResponse({'error': 'Faltan parámetros'}, status=400)
 
-    # Obtener todas las rutinas con la misma frecuencia, horario e instructor
-    # Excluir la rutina actual que se está editando
     rutinas = Rutina.objects.filter(
         InstructorID=instructor_id,
         Frecuencia=frecuencia,
