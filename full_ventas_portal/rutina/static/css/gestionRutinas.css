@@ -1,236 +1,115 @@
-/* Importa la fuente Keania One desde Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Keania+One&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
-
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Keania One', sans-serif;
-}
-
-
-.nav {
-    width: 100%;
-    padding: 25px 175px;
-    display: flex;
-    justify-content: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.nav__list{
-    list-style: none;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    max-width: 90%;
-}
-
-.nav__item {
-    padding: 10px;
-    margin: 0 10px;
-    flex: 1;
-    text-align: center;
-    text-decoration: none; 
-    color: black; 
-    transition: text-decoration 0.3s, color 0.3s;
-    cursor: pointer; 
-}
-
-.nav__item:hover {
-    text-decoration: underline;
-    text-decoration-color: #0069FF; 
-    color: #0069FF; 
-}
-
-.nav__item--company{
-    padding: 10px;
-    flex: 3;
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-}
-
-.nav__company-name {
-    font-size: 40px;
-    font: bold;
-    color: #0069FF;
-}
-
-.nav__company-subtitle {
-    color: #0069FF;
-}
-
-.nav__social-list {
-    list-style: none;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-}
-
-.nav__social-item {
-    margin: 0 10px;
-    text-align: center;
-    cursor: pointer;
-}
-
-.nav__social-item,
-.iconify {
-    width: 20px;
-    height: 20px;
-}
-
 .main {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
+    padding: 40px 200px;
+} 
 
 .content {
-    width: 80%;
-    display: flex;
-    flex-direction: column;
-    align-items: center; 
-    padding: 40px 20px; 
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .content__filters {
-    max-width: 100%;
-    width: 100%;
     display: flex;
-    justify-content: space-between; 
-    align-items: center; 
-}
-
-.content__search-form {
-    width: 300px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
 .content__search-wrapper {
-    position: relative; 
-    width: 100%; 
+    display: flex;
+    align-items: center;
+    background-color: #eee;
+    padding: 5px 10px;
+    border-radius: 20px;
 }
 
 .content__search-input {
-    width: 100%;
-    padding: 8px 10px 8px 35px;
-    background-color: #F0EDED; 
     border: none;
-    border-radius: 4px;
+    outline: none;
+    background: none;
+    margin-left: 10px;
 }
 
 .content__search-icon {
-    position: absolute;
-    left: 10px; 
-    top: 50%;
-    transform: translateY(-50%);
-    color: black; 
-    pointer-events: none; 
+    font-size: 20px;
 }
 
 .content__create-button {
-    background-color: #0069FF;
+    background-color: #333;
     color: white;
-    padding: 10px 25px;
-    border: 2px solid #0069FF;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s; 
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
 }
 
 .content__create-button:hover {
-    background-color: white;
-    color: #0069FF;
+    background-color: #555;
 }
 
-.content__total-rutinas {
-    align-self: flex-start;
-    margin: 20px 0px;
-    letter-spacing: 1px;
+.table-container {
+    overflow-x: auto;
 }
 
 .content__table {
     width: 100%;
     border-collapse: collapse;
-    border: 2px solid black;
-    text-align: center;
-    font: normal;
 }
 
-.content__table th {
-    border-bottom: 2px solid black;
-    padding: 10px;
+.content__table-head {
+    background-color: #f4f4f4;
 }
 
-.content__table td {
-    padding: 10px;
-    font-family: 'Montserrat', sans-serif;
-    vertical-align: middle
+.content__table-row {
+    text-align: left;
+    border-bottom: 1px solid #ccc;
 }
 
-.content__table tr {
-    border-bottom: 2px solid black;
+.content__table-header,
+.content__table-data {
+    padding: 12px 15px;
 }
 
-.content__table tr:last-child {
-    border-bottom: none;
+.content__table-data img {
+    border-radius: 8px;
 }
 
-.content__table-data-icons{
+.content__table-body .content__table-row:hover {
+    background-color: #f1f1f1;
+}
+
+.content__table-data-icons {
     display: flex;
-    justify-content: center;
-    align-content: center;
-    height: 100%;
+    align-items: center;
+    gap: 10px;
 }
 
+.content__view-button,
 .content__edit-button,
-.content__delete-button,
-.content__view-button {
-    border: none;
-    color: white;
-    cursor: pointer;
-    font-size: 16px;
-    padding: 5px;
-    margin: 0 3px;
-    border-radius: 6px;
-    display: flex;  
-    justify-content: center;  
-    align-items: center; 
-    height: 35px; 
-    width: 35px; 
-}
-
-.content__view-button {
-    border: 2px solid rgb(250, 171, 26);
-    background-color: rgb(250, 171, 26);
-}
-
-.content__view-button:hover {
-    background-color: white;
-    color: rgb(250, 171, 26);
-}
-
-.content__edit-button {
-    border: 2px solid #0069FF;
-    background-color: #0069FF;
-}
-
-.content__edit-button:hover {
-    background-color: white;
-    color: #0069FF;
-}
-
 .content__delete-button {
-    border: 2px solid #F12E2E;
-    background-color: #F12E2E;
-}
-
-.content__delete-button:hover {
     background-color: white;
-    color: #F12E2E;
+    padding: 5px;
+    border: 1px solid black;
+    border-radius: 5px;
 }
 
-.content__mensaje {
-    margin: 50px 100px;
+.content__table-data-icons .content__view-button .iconify,
+.content__table-data-icons .content__edit-button .iconify,
+.content__table-data-icons .content__delete-button .iconify {
+    color: black; 
+    font-size: 24px; 
+}
+
+@media (max-width: 768px) {
+
+    .content__filters {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .main {
+        padding: 40px 20px;
+    } 
 }

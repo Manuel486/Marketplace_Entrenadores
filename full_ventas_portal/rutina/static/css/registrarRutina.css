@@ -1,33 +1,24 @@
-@import url('https://fonts.googleapis.com/css2?family=Keania+One&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
 .main {
+    padding: 40px 300px;
+} 
+
+.content {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 40px 0;
-    font-family: 'Montserrat', sans-serif;
+    background-color: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .form-container {
-    background: #f9f9f9;
-    padding: 40px;
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    width: 50%;
+    width: 100%;
 }
 
 .form-container__title {
     text-align: center;
     margin-bottom: 20px;
     font-size: 24px;
-    font-family: 'Keania One', sans-serif;
     color: #333;
 }
 
@@ -43,6 +34,13 @@
     gap: 20px;
 }
 
+.form__row--description {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 20px;
+}
+
 .form__row--buttons {
     justify-content: center;
 }
@@ -53,26 +51,41 @@
     position: relative; 
     border-radius: 4px;
     background-color: #bbb;
-    /* overflow: hidden;  */
-    /* display: flex; */
-    /* justify-content: center; */
+}
+
+.container__image--view {
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    border-radius: 5px;
+    overflow: hidden; 
 }
 
 .form__image {
     width: 100%;
     height: 100%;
-    /* object-fit: cover;  */
-    /* display: block;  */
+    object-fit: cover;
 }
-
 
 .form__file-input {
     display: none;
 }
 
+.remove__image {
+    position: absolute;
+    top: 2px;
+    right: 3px;
+    background-color: rgb(233, 101, 101);
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 12px;
+    border-radius: 50px;
+}
+
 .form__file-label {
     font-size: 13px;
-    width: 80%;
     padding: 15px;
     background-color: white;
     color: black;
@@ -84,7 +97,6 @@
     align-items: center;
     border: 3px dashed #e7e7e7;
 }
-
 
 .form__field {
     flex: 1;
@@ -102,11 +114,20 @@
 .form__input-group {
     display: flex;
     align-items: center;
-    gap: 10px; /* Espacio entre el input y el botón */
+    gap: 10px;
+    margin: 5px 0;
+}
+
+.form__input-group-objectives {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px; 
+    margin: 10px 0;
 }
 
 .form__input {
-    flex: 0 0 70%; /* Ocupa el 70% del ancho */
+    flex: 0 0 70%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -118,16 +139,15 @@
     padding: 10px;
     border: none;
     border-radius: 4px;
-    background-color: #0069FF;
+    background-color: #5e5e5e;
     color: white;
     cursor: pointer;
     text-align: center;
 }
 
 .form__button--popup:hover {
-    background-color: #0056cc;
+    background-color: rgb(42, 42, 42);
 }
-
 
 .form__button {
     padding: 10px 20px;
@@ -146,12 +166,12 @@
 }
 
 .form__button--submit {
-    background-color: #0069FF;
+    background-color: #3fd7ee;
     color: white;
 }
 
 .form__button--submit:hover {
-    background-color: #0056cc;
+    background-color: #3fd7ee;
 }
 
 .client-card {
@@ -166,7 +186,6 @@
     transition: transform 0.3s, box-shadow 0.3s;
 }
 
-
 .client-card h4 {
     margin-top: 0;
     font-size: 18px;
@@ -177,4 +196,75 @@
     margin: 5px 0;
     font-size: 14px;
     color: #666;
+}
+
+.form__button--remove-objective {
+    flex: 0 0 5%;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #e52828;
+    color: white;
+    cursor: pointer;
+    text-align: center;
+}
+
+/* Media Queries */
+@media (max-width: 1200px) {
+    .main {
+        padding: 40px 20px; /* Ajusta el padding para pantallas más pequeñas */
+    }
+
+    .form__row, .form__row--description {
+        flex-wrap: wrap; /* Permite que los elementos se envuelvan si no caben en una fila */
+    }
+
+    .container__image {
+        width: 30%; /* Aumenta el ancho para pantallas medianas */
+        height: auto; /* Ajusta la altura automáticamente */
+    }
+}
+
+@media (max-width: 992px) {
+    .main {
+        padding: 40px 10px; /* Ajusta el padding para pantallas más pequeñas */
+    }
+
+    .form__row, .form__row--description {
+        flex-wrap: wrap; /* Permite que los elementos se envuelvan si no caben en una fila */
+    }
+
+    .container__image {
+        width: 40%; /* Aumenta el ancho para pantallas pequeñas */
+    }
+
+    .form__input, .form__button--popup {
+        flex: 1 1 100%; /* Asegura que los campos de entrada y botones ocupen el 100% del ancho disponible */
+    }
+}
+
+@media (max-width: 768px) {
+    .form__row, .form__row--description, .form__input-group, .form__input-group-objectives {
+        flex-direction: column; /* Cambia a columna si los elementos no caben en una fila */
+    }
+
+    .form__field {
+        width: 100%;
+    }
+
+    .container__image {
+        width: 100%; /* Asegura que la imagen se ajuste a su contenedor en pantallas pequeñas */
+    }
+
+    .form__input, .form__button--popup {
+        width: 100%; /* Asegura que el campo de entrada y el botón de popup usen el 100% del ancho disponible */
+    }
+
+    .form__button--remove-objective{
+        width: 100%;
+    }
+
+    .form__button--popup {
+        margin-top: 10px; /* Añade un margen superior para separar los botones de otros elementos en pantallas pequeñas */
+    }
 }

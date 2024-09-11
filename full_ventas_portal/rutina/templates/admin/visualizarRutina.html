@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Visualizar rutina{% endblock title %}
+
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'css/visualizarRutina.css' %}">
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+{% endblock extra_styles %}
+
+{% block body %}
+{% include "admin/navbar.html" %}
+<main class="main">
+    <div class="content">
+        <div class="form-container">
+            <h3 class="form-container__title">Visualizar Rutina</h3>
+            <div class="form">
+                {% csrf_token %}
+                
+                <div class="form__row form__row--images-info">
+                    <div class="form__images">
+                        <div class="image-view">
+                            {% if rutina.Imagen1 %}
+                                <img src="{{ rutina.Imagen1.url }}" alt="Imagen de la rutina">
+                            {% else %}
+                                <img src="https://www.shutterstock.com/image-vector/default-ui-image-placeholder-wireframes-600nw-1037719192.jpg" alt="Imagen predeterminada">
+                            {% endif %}
+                        </div>
+                        <div class="image-view">
+                            {% if rutina.Imagen2 %}
+                                <img src="{{ rutina.Imagen2.url }}" alt="Imagen de la rutina">
+                            {% else %}
+                                <img src="https://www.shutterstock.com/image-vector/default-ui-image-placeholder-wireframes-600nw-1037719192.jpg" alt="Imagen predeterminada">
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form__info">
+                        <div class="form__row">
+                            <div class="form__field">
+                                <span class="form__label">Cliente:</span>
+                                <span class="form__data">{{ rutina.ClienteID.ClienteID.Nombre }} {{ rutina.ClienteID.ClienteID.Apellido }}</span>
+                            </div>
+                            <div class="form__field">
+                                <span class="form__label">Nombre:</span>
+                                <span class="form__data">{{ rutina.Nombre }}</span>
+                            </div>
+                            <div class="form__field">
+                                <span class="form__label">Descripción:</span>
+                                <span class="form__data">{{ rutina.Descripcion }}</span>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="form__row">
+                            <div class="form__field">
+                                <span class="form__label">Tipo:</span>
+                                <span class="form__data">
+                                    {% for tipo in tipos %}
+                                        {% if tipo.TipoDeRutinaID == rutina.TipoID_id %}
+                                            {{ tipo.Nombre }}
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                            </div>
+                            <div class="form__field">
+                                <span class="form__label">Frecuencia:</span>
+                                <span class="form__data">{{ rutina.Frecuencia }}</span>
+                            </div>
+                            <div class="form__field">
+                                <span class="form__label">Instructor:</span>
+                                <span class="form__data">
+                                    {% for instructor in instructores %}
+                                        {% if instructor.InstructorID == rutina.InstructorID_id %}
+                                            {{ instructor.Nombres }} {{ instructor.Apellidos }}
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form__row">
+                            <div class="form__field">
+                                <span class="form__label">Fecha de Inicio:</span>
+                                <span class="form__data">{{ rutina.FechaInicio|date:"d/m/Y" }}</span>
+                            </div>
+                            <div class="form__field">
+                                <span class="form__label">Fecha de Fin:</span>
+                                <span class="form__data">{{ rutina.FechaFin|date:"d/m/Y" }}</span>
+                            </div>
+                            <div class="form__field form__field--empty"></div> 
+                        </div>
+                    
+                        <div class="form__field form__field--metas">
+                            <span class="form__label">Metas:</span>
+                            <ul class="form__metas-list">
+                                {% for meta in metas %}
+                                    <li class="form__metas-item">
+                                        <span>✅ {{ meta.Nombre }}</span>
+                                        <br />
+                                        <span><strong>Estado Inicial:</strong> {{ meta.EstadoInicial }}</span>
+                                        <span><strong>Estado Final:</strong> {{ meta.EstadoFinal }}</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form__row form__row--buttons">
+                    <button type="button" class="form__button form__button--cancel" onclick="window.history.back();">Volver</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

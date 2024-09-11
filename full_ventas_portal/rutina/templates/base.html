@@ -1,20 +1,37 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock title %}</title>
-    <link rel="stylesheet" href="{% block style %}{% endblock style %}">
+    
+    {% comment %} <link rel="stylesheet" href="{% block style %}{% endblock style %}"> {% endcomment %}
+
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+
+    {% block extra_styles %}
+    {% endblock extra_styles %}
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@latest/css/flaticon.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@latest/css/flaticon.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pikaday/css/pikaday.css">
+    <script src="https://cdn.jsdelivr.net/npm/moment/moment.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pikaday/pikaday.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pikaday/plugins/pikaday.es.js"></script>
+    
+  
 </head>
 <body>
 
   {% block body%}
     
   {% endblock body %}
+  
   <script src="https://code.iconify.design/2/2.1.2/iconify.min.js"></script>
 </body>
 </html>
