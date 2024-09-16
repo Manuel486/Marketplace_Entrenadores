@@ -1,4 +1,4 @@
--- Insertar datos en la tabla Especialidad
+-- Base de datos full_ventas_portal-- Insertar datos en la tabla Especialidad
 INSERT INTO `Especialidad` (`Nombre`, `Estado`, `FechaCreacion`, `FechaActualizacion`) VALUES
 ('Cardio', 'Activo', '2024-01-01', '2024-01-01'),
 ('Fuerza', 'Activo', '2024-01-01', '2024-01-01'),
