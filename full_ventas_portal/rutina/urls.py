@@ -9,10 +9,15 @@ urlpatterns = [
     path('registrarRutina/', views.registrarRutina, name='registrarRutina'),
     path('editarRutina/<int:id>/', views.editarRutina, name='editarRutina'),
     path('eliminarRutina/<int:id>/', views.eliminarRutina, name='eliminarRutina'),
+
     ## Filtros
     path('obtener-instructores/', views.obtener_instructores_por_especialidad, name='obtener_instructores_por_especialidad'),
-    path('obtener-frecuencias/', views.obtener_frecuencias_por_instructor, name='obtener_frecuencias_por_instructor'),
-    path('obtener-rangos-de-fechas/', views.obtener_rangos_de_fechas, name='obtener_rangos_de_fechas'),
-    path('obtener_rangos_de_fechas_excluyendo/', views.obtener_rangos_de_fechas_excluyendo, name='obtener_rangos_de_fechas_excluyendo'),
-    path('obtener_metas_por_tipo_de_rutina/', views.obtener_metas_por_tipo_de_rutina, name='obtener_metas_por_tipo_de_rutina')
+    path('obtener_metas_por_tipo_de_rutina/', views.obtener_metas_por_tipo_de_rutina, name='obtener_metas_por_tipo_de_rutina'),
+
+    ## Tipo de Rutinas
+    path('gestionTipoDeRutinas/', views.gestionTipoRutinas, name='gestionTipoRutinas'),
+    path('registrarTipoDeRutina/', views.registrarTipoDeRutina, name='registrarTipoDeRutina'),
+    path('editarTipoDeRutina/<int:id>/', views.editarTipoDeRutina, name='editarTipoDeRutina'),
+    path('visualizarTipoDeRutina/<int:id>/', views.visualizarTipoDeRutina, name='visualizarTipoDeRutina'),
+    path('eliminarTipoDeRutina/<int:id>/', views.eliminarTipoDeRutina, name='eliminarTipoDeRutina'),
 ]

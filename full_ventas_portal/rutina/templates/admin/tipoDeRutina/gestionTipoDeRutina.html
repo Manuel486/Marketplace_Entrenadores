@@ -1,10 +1,10 @@
-{% extends "../base.html" %}
+{% extends "base.html" %}
 {% load static %}
 
-{% block title %} Gestión de rutinas {% endblock title %}
+{% block title %} Gestión de Tipos de Rutina {% endblock title %}
 
 {% block extra_styles %}
-    <link rel="stylesheet" href="{% static 'css/gestionRutinas.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
     <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
 {% endblock extra_styles %}
 
@@ -21,46 +21,33 @@
                     <input class="content__search-input" type="text" name="search" placeholder="Buscar por nombre..." value="{{ request.GET.search }}">
                 </div>
             </form>
-            <a href="{% url 'registrarRutina' %}" class="content__create-button">Registrar</a>
+            <a href="{% url 'registrarTipoDeRutina' %}" class="content__create-button">Registrar</a>
         </div>
-        <span class="content__total-rutinas">Total de rutinas: {{ rutinas|length }}</span>
+        <span class="content__total-tipos">Total de tipos de rutina: {{ tipos|length }}</span>
         <div class="table-container">
             <table class="content__table">
                 <thead class="content__table-head">
                     <tr class="content__table-row">
                         <th class="content__table-header">#</th>
-                        <th class="content__table-header">Imagen</th>
                         <th class="content__table-header">Nombre</th>
-                        <th class="content__table-header">Frecuencia</th>
-                        <th class="content__table-header">Cliente</th>
-                        <th class="content__table-header">Instructor</th>
+                        <th class="content__table-header">Descripción</th>
                         <th class="content__table-header">Opciones</th>
                     </tr>
                 </thead>
                 <tbody class="content__table-body">
-                    {% for r in rutinas %}
+                    {% for tipo in tipos %}
                     <tr class="content__table-row">
                         <td class="content__table-data">{{ forloop.counter }}</td>
-                        <td class="content__table-data">
-                            {% if r.Imagen1 and r.Imagen1.url %}
-                            <img src="{{ r.Imagen1.url }}" alt="Imagen de la rutina" class="form__image" id="imagePreview1" style="max-width: 75px; max-height: 75px;">
-                            {% endif %}
-                            {% if r.Imagen2 and r.Imagen2.url %}
-                                <img src="{{ r.Imagen2.url }}" alt="Imagen de la rutina" class="form__image" id="imagePreview2" style="max-width: 75px; max-height: 75px;">
-                            {% endif %}
-                        </td>
-                        <td class="content__table-data">{{ r.Nombre }}</td>
-                        <td class="content__table-data">{{ r.Frecuencia }}</td>
-                        <td class="content__table-data">{{ r.ClienteID.ClienteID.Nombre }} {{ r.ClienteID.ClienteID.Apellido }}</td>
-                        <td class="content__table-data">{{ r.InstructorID.Nombres }} {{ r.InstructorID.Apellidos }}</td>
+                        <td class="content__table-data">{{ tipo.Nombre }}</td>
+                        <td class="content__table-data">{{ tipo.Descripcion }}</td>
                         <td class="content__table-data content__table-data-icons">
-                            <a href="{% url 'visualizarRutina' r.RutinaID %}" class="content__view-button">
+                            <a href="{% url 'visualizarTipoDeRutina' tipo.TipoDeRutinaID %}" class="content__view-button">
                                 <span class="iconify" data-icon="mdi:eye" data-inline="false"></span>
                             </a>
-                            <a href="{% url 'editarRutina' r.RutinaID %}" class="content__edit-button">
+                            <a href="{% url 'editarTipoDeRutina' tipo.TipoDeRutinaID %}" class="content__edit-button">
                                 <span class="iconify" data-icon="mdi:pencil" data-inline="false"></span>
                             </a>
-                            <button onclick="confirmarEliminacion({{ r.RutinaID }})" class="content__delete-button">
+                            <button onclick="confirmarEliminacion({{ tipo.TipoDeRutinaID }})" class="content__delete-button">
                                 <span class="iconify" data-icon="mdi:trash-can" data-inline="false"></span>
                             </button>
                         </td>
@@ -78,7 +65,7 @@
 <script src="https://code.iconify.design/2/2.1.2/iconify.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    function confirmarEliminacion(rutinaId) {
+    function confirmarEliminacion(tipoId) {
         Swal.fire({
             title: '¿Estás seguro?',
             text: "¡No podrás revertir esto!",
@@ -90,14 +77,7 @@
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire({
-                    title: '¡Eliminado!',
-                    text: "La rutina fue eliminada con éxito.",
-                    icon: 'success',
-                    confirmButtonText: 'Aceptar'
-                }).then(() => {
-                    window.location.href = "{% url 'eliminarRutina' '0' %}".replace('0', rutinaId);
-                });
+                window.location.href = "{% url 'eliminarTipoDeRutina' '0' %}".replace('0', tipoId);
             }
         });
     }

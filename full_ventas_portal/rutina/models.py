@@ -23,13 +23,21 @@ class TipoDeRutina(models.Model):
     TipoDeRutinaID = models.AutoField(primary_key=True, db_column='TipoDeRutinaID')
     Nombre = models.CharField(max_length=100, db_column='Nombre')
     Descripcion = models.TextField(blank=True, null=True, db_column='Descripcion')
-    EspecialidadID = models.ForeignKey(Especialidad, on_delete=models.CASCADE, db_column='EspecialidadID')
 
     def __str__(self):
         return self.Nombre
 
     class Meta:
         db_table = 'TipoDeRutina'
+
+class TipoDeRutinaEspecialidad(models.Model):
+    TipoDeRutinaEspecialidadID = models.AutoField(primary_key=True, db_column='TipoDeRutinaEspecialidadID')
+    TipoDeRutinaID = models.ForeignKey(TipoDeRutina, on_delete=models.CASCADE, db_column='TipoDeRutinaID')
+    EspecialidadID = models.ForeignKey(Especialidad, on_delete=models.CASCADE, db_column='EspecialidadID')
+
+    class Meta:
+        db_table = 'TipoDeRutinaEspecialidad'
+        unique_together = ('TipoDeRutinaID', 'EspecialidadID')
 
 class MetaPredeterminada(models.Model):
     MetaPredeterminadaID = models.AutoField(primary_key=True, db_column='MetaPredeterminadaID')
@@ -138,8 +146,8 @@ class Rutina(models.Model):
     RutinaID = models.AutoField(primary_key=True, db_column='RutinaID')
     Nombre = models.CharField(max_length=255, db_column='Nombre')
     TipoID = models.ForeignKey(TipoDeRutina, on_delete=models.CASCADE, db_column='TipoID')
-    Descripcion = models.TextField(db_column='Descripcion')
-    Frecuencia = models.CharField(max_length=50, db_column='Frecuencia')
+    Descripcion = models.TextField(null=True, db_column='Descripcion')
+    Frecuencia = models.TextField(max_length=50, db_column='Frecuencia')
     FechaInicio = models.DateField(db_column='FechaInicio')
     FechaFin = models.DateField(db_column='FechaFin')
     Imagen1 = models.ImageField(upload_to='imagenes/', blank=True, null=True, db_column='Imagen1')

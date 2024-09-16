@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Ver Tipo de Rutina {% endblock title %}
+
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/visualizarTipoDeRutina.css' %}">
+{% endblock extra_styles %}
+
+{% block body %}
+{% include "admin/navbar.html" %}
+<main class="details-main">
+    <div class="details-container">
+        <h2 class="details-title">Detalles del Tipo de Rutina</h2>
+        <div class="details">
+            <div class="details-group">
+                <p class="details-label"><strong>Nombre:</strong></p>
+                <p class="details-data">{{ tipo.Nombre }}</p>
+            </div>
+
+            <div class="details-group">
+                <p class="details-label"><strong>Descripción:</strong></p>
+                <p class="details-data">{{ tipo.Descripcion }}</p>
+            </div>
+
+            <div class="details-group">
+                <div class="details-fieldset">
+                    <p class="details-label"><strong>Especialidades Asociadas:</strong></p>
+                    <div class="details-specialties">
+                        {% for especialidad in especialidades %}
+                        <p class="details-specialty">{{ especialidad.Nombre }}</p>
+                        {% empty %}
+                        <p class="details-specialty">No hay especialidades asociadas.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="details-actions">
+                <a href="{% url 'gestionTipoRutinas' %}" class="details-button details-button--cancel">Volver a la lista</a>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock body %}

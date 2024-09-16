@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Error {% endblock title %}
+
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/error.css' %}">
+{% endblock extra_styles %}
+
+{% block body %}
+    {% include "admin/navbar.html" %}
+    <main class="main">
+        <div class="content">
+            <div class="error-container">
+                <h2 class="error-title">Error</h2>
+                <p class="error-message">{{ mensaje }}</p>
+                <button class="error-button" onclick="redirigir()">OK</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function redirigir() {
+            window.location.href = "{% url 'gestionTipoRutinas' %}";
+        }
+    </script>
+{% endblock %}

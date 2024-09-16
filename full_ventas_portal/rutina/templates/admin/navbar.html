@@ -1,60 +1,46 @@
 {% load static %}
 
-<nav>
-  <div class="logo">SPORTLIFE</div>
-  <input type="checkbox" id="click" />
-  <label for="click" class="menu-btn">
+<nav class="navbar">
+  <div class="navbar__logo">SPORTLIFE</div>
+  <input type="checkbox" id="navbar-toggle" class="navbar__toggle"/>
+  <label for="navbar-toggle" class="navbar__menu-btn">
     <i class="fas fa-bars"></i>
   </label>
-  <ul>
-    <li>
-      <a class="link" href="/gestionRutinas">
-        <span
-          class="iconify sidebar__icon"
-          data-icon="mdi:run"
-          data-inline="false"
-        ></span>
-        <span class="sidebar__text">Rutinas</span>
+  <ul class="navbar__menu">
+    <li class="navbar__item">
+      <a class="navbar__link" href="/gestionRutinas">
+        <span class="iconify navbar__icon" data-icon="mdi:run" data-inline="false"></span>
+        <span class="navbar__text">Rutinas</span>
       </a>
     </li>
-    <li>
-      <a class="link" href="#">
-        <span
-          class="iconify sidebar__icon"
-          data-icon="mdi:account-tie"
-          data-inline="false"
-        ></span>
-        <span class="sidebar__text">Instructores</span>
+    <li class="navbar__item">
+      <a class="navbar__link" href="/gestionTipoDeRutinas">
+        <span class="iconify navbar__icon" data-icon="mdi:format-list-bulleted" data-inline="false"></span>
+        <span class="navbar__text">Tipo de Rutinas</span>
       </a>
     </li>
-    <li>
-      <a class="link" href="#">
-        <span
-          class="iconify sidebar__icon"
-          data-icon="mdi:account"
-          data-inline="false"
-        ></span>
-        <span class="sidebar__text">Clientes</span>
+    <li class="navbar__item">
+      <a class="navbar__link" href="#">
+        <span class="iconify navbar__icon" data-icon="mdi:account-tie" data-inline="false"></span>
+        <span class="navbar__text">Instructores</span>
       </a>
     </li>
-    <li>
-      <a class="link" href="#">
-        <span
-          class="iconify sidebar__icon"
-          data-icon="mdi:food-apple"
-          data-inline="false"
-        ></span>
-        <span class="sidebar__text">Dietas</span>
+    <li class="navbar__item">
+      <a class="navbar__link" href="#">
+        <span class="iconify navbar__icon" data-icon="mdi:account" data-inline="false"></span>
+        <span class="navbar__text">Clientes</span>
       </a>
     </li>
-    <li>
-      <a class="link" href="#">
-        <span
-          class="iconify sidebar__icon"
-          data-icon="mdi:comment"
-          data-inline="false"
-        ></span>
-        <span class="sidebar__text">Comentarios</span>
+    <li class="navbar__item">
+      <a class="navbar__link" href="#">
+        <span class="iconify navbar__icon" data-icon="mdi:food-apple" data-inline="false"></span>
+        <span class="navbar__text">Dietas</span>
+      </a>
+    </li>
+    <li class="navbar__item">
+      <a class="navbar__link" href="#">
+        <span class="iconify navbar__icon" data-icon="mdi:comment" data-inline="false"></span>
+        <span class="navbar__text">Comentarios</span>
       </a>
     </li>
   </ul>

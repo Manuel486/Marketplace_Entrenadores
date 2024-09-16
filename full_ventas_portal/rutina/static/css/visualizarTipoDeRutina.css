@@ -1,0 +1,97 @@
+.details-main {
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    background-color: #f4f4f4;
+}
+
+.details-container {
+    max-width: 800px;
+    width: 100%;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.details-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+}
+
+.details {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.details-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.details-label {
+    margin-bottom: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.details-data,
+.details-specialty {
+    font-size: 16px;
+    color: #666;
+    margin-top: 5px;
+}
+
+.details-fieldset {
+    border: none;
+    padding: 0;
+}
+
+.details-specialties {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.details-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.details-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 16px;
+    text-decoration: none;
+}
+
+.details-button--cancel {
+    background-color: #ccc;
+    color: #333;
+}
+
+.details-button--cancel:hover {
+    background-color: #bbb;
+}
+
+@media (max-width: 768px) {
+    .details-main {
+        padding: 20px;
+    }
+
+    .details-container {
+        padding: 15px;
+    }
+
+    .details-specialties {
+        flex-direction: column;
+    }
+}

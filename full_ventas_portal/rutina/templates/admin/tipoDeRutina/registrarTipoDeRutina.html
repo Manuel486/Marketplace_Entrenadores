@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Registrar Tipo de Rutina
+{% endblock title %}
+
+{% block extra_styles %}
+<link rel="stylesheet" href="{% static 'css/navbar.css' %}" />
+<link rel="stylesheet" href="{% static 'css/formularioTipoDeRutina.css' %}" />
+{% endblock extra_styles %}
+
+{% block body %}
+{% include "admin/navbar.html" %}
+<main class="form-main">
+  <div class="form-container">
+    <h2 class="form-title">Registrar Tipo de Rutina</h2>
+    <form class="form" method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="Nombre" class="form-label">Nombre:</label>
+        <input
+          type="text"
+          name="Nombre"
+          id="Nombre"
+          class="form-input"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="Descripcion" class="form-label">Descripción:</label>
+        <textarea
+          name="Descripcion"
+          id="Descripcion"
+          class="form-textarea"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <div class="form-fieldset">
+          <label class="form-label">Especialidades:</label>
+          <div class="form-specialties">
+            {% for especialidad in especialidades %}
+            <label class="form-checkbox-label">
+              <input
+                type="checkbox"
+                name="Especialidades"
+                value="{{ especialidad.EspecialidadID }}"
+                class="form-checkbox"
+              />
+              {{ especialidad.Nombre }}
+            </label>
+            {% if forloop.counter0|divisibleby:3 and not forloop.last %}
+          </div>
+          <div class="form-specialties">
+            {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="form-button form-button--submit">
+          Guardar
+        </button>
+        <a
+          href="{% url 'gestionTipoRutinas' %}"
+          class="form-button form-button--cancel"
+          >Cancelar</a
+        >
+      </div>
+    </form>
+  </div>
+</main>
+{% endblock body %}
