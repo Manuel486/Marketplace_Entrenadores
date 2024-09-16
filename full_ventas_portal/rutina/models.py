@@ -179,6 +179,7 @@ class Usuario(models.Model):
     TIPO_CHOICES = [
         ('Cliente', 'Cliente'),
         ('Instructor', 'Instructor'),
+        ('Administrador', 'Administrador'),
     ]
     UsuarioID = models.AutoField(primary_key=True, db_column='UsuarioID')
     Username = models.CharField(max_length=100, db_column='Username')
@@ -186,7 +187,7 @@ class Usuario(models.Model):
     Email = models.EmailField(max_length=100, db_column='Email')
     Nombre = models.CharField(max_length=100, db_column='Nombre')
     Apellido = models.CharField(max_length=100, db_column='Apellido')
-    Tipo = models.CharField(max_length=10, choices=TIPO_CHOICES, db_column='Tipo')
+    Tipo = models.CharField(max_length=20, choices=TIPO_CHOICES, db_column='Tipo')
 
     def __str__(self):
         return f"{self.Nombre} {self.Apellido} ({self.Username})"

@@ -334,7 +334,6 @@ def registrarTipoDeRutina(request):
             except Exception as e:
                 print(f"Se produjo un error al procesar la especialidad con ID {especialidad_id}: {e}")
 
-
         return redirect('gestionTipoRutinas')
 
     especialidades = Especialidad.objects.all()
