@@ -11,7 +11,9 @@ Registrar Tipo de Rutina
 {% endblock extra_styles %}
 
 {% block body %}
-{% include "admin/navbar.html" %}
+{% with options=navbar_options %}
+    {% include "admin/navbar.html" with options=options %}
+{% endwith %}
 <main class="form-main">
   <div class="form-container">
     <h2 class="form-title">Registrar Tipo de Rutina</h2>
@@ -65,7 +67,7 @@ Registrar Tipo de Rutina
           Guardar
         </button>
         <a
-          href="{% url 'gestionTipoRutinas' %}"
+          href="{% url 'gestionTipoDeRutinas' %}"
           class="form-button form-button--cancel"
           >Cancelar</a
         >

@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} 
+Visualizar Rutina de los Clientes 
+{% endblock title %}
+
+{% block extra_styles %}
+<link rel="stylesheet" href="{% static 'css/visualizarRutina.css' %}" />
+<link rel="stylesheet" href="{% static 'css/navbar.css' %}" />
+{% endblock extra_styles %}
+
+{% block body %}
+{% with options=navbar_options %}
+  {% include "admin/navbar.html" with options=options %}
+{% endwith %}
+<main class="view-main">
+  {% if mensaje %}
+    <p class="message">{{ mensaje }}</p>
+  {% else %}
+    {% for rutina in rutinas %}
+      <div class="view-content">
+        <div class="view-form-container">
+          <h3 class="view-form-title">Visualizar Rutina</h3>
+          <div class="view-form">
+            <div class="view-form__row view-form__row--images-info">
+              <div class="view-form__images">
+                <div class="view-image-view image-zoom-container">
+                  {% if rutina.Imagen1 %}
+                    <img src="{{ rutina.Imagen1.url }}" alt="Imagen de la rutina" onclick="openZoom(this)" />
+                  {% else %}
+                    <img src="https://www.shutterstock.com/image-vector/default-ui-image-placeholder-wireframes-600nw-1037719192.jpg" alt="Imagen predeterminada" onclick="openZoom(this)" />
+                  {% endif %}
+                </div>
+                <div class="view-image-view image-zoom-container">
+                  {% if rutina.Imagen2 %}
+                    <img src="{{ rutina.Imagen2.url }}" alt="Imagen de la rutina" onclick="openZoom(this)" />
+                  {% else %}
+                    <img src="https://www.shutterstock.com/image-vector/default-ui-image-placeholder-wireframes-600nw-1037719192.jpg" alt="Imagen predeterminada" onclick="openZoom(this)" />
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="view-form__info">
+                <div class="view-form__field">
+                  <span class="view-form__label">Nombre:</span>
+                  <span class="view-form__data">{{ rutina.Nombre }}</span>
+                </div>
+                <br>
+                <div class="view-form__field">
+                  <span class="view-form__label">Descripción:</span>
+                  <span class="view-form__data">{{ rutina.Descripcion }}</span>
+                </div>
+
+                <br />
+                <div class="view-form__row">
+                  <div class="view-form__field">
+                    <span class="view-form__label">Tipo:</span>
+                    <span class="view-form__data">
+                      {% for tipo in tipos %}
+                        {% if tipo.TipoDeRutinaID == rutina.TipoID_id %}
+                          {{ tipo.Nombre }}
+                        {% endif %}
+                      {% endfor %}
+                    </span>
+                  </div>
+                  <div class="view-form__field">
+                    <span class="view-form__label">Frecuencia:</span>
+                    <span class="view-form__data">{{ rutina.Frecuencia }}</span>
+                  </div>
+                  <div class="view-form__field">
+                    <span class="view-form__label">Instructor:</span>
+                    <span class="view-form__data">
+                      {% for instructor in instructores %}
+                        {% if instructor.InstructorID == rutina.InstructorID_id %}
+                          {{ instructor.Nombres }} {{ instructor.Apellidos }}
+                        {% endif %}
+                      {% endfor %}
+                    </span>
+                  </div>
+                </div>
+                <br>
+                <div class="view-form__row">
+                  <div class="view-form__field">
+                    <span class="view-form__label">Fecha de Inicio:</span>
+                    <span class="view-form__data">{{ rutina.FechaInicio|date:"d/m/Y" }}</span>
+                  </div>
+                  <div class="view-form__field">
+                    <span class="view-form__label">Fecha de Fin:</span>
+                    <span class="view-form__data">{{ rutina.FechaFin|date:"d/m/Y" }}</span>
+                  </div>
+                </div>
+
+                <div class="view-form__field view-form__field--metas">
+                  <span class="view-form__label">Metas:</span>
+                  <ul class="view-form__metas-list">
+                    {% for meta in metas %}
+                      <li class="view-form__metas-item">
+                        <span>✅ {{ meta.Nombre }}</span>
+                        <br />
+                        <span><strong>Estado Inicial:</strong> {{ meta.EstadoInicial }}</span>
+                        <span><strong>Estado Final:</strong> {{ meta.EstadoFinal }}</span>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <br>
+    {% endfor %}
+  {% endif %}
+
+  <div class="view-form__row view-form__row--buttons">
+    <button type="button" class="view-form__button view-form__button--cancel" onclick="window.history.back();">
+      Volver
+    </button>
+  </div>
+</main>
+
+<script>
+  function openZoom(img) {
+    const zoomContainer = document.createElement("div");
+    zoomContainer.className = "image-zoom-full";
+
+    const zoomImg = document.createElement("img");
+    zoomImg.src = img.src;
+
+    const closeButton = document.createElement("span");
+    closeButton.className = "image-zoom-close";
+    closeButton.innerHTML = "&times;";
+
+    closeButton.onclick = function () {
+      document.body.removeChild(zoomContainer);
+    };
+
+    zoomContainer.appendChild(closeButton);
+    zoomContainer.appendChild(zoomImg);
+    document.body.appendChild(zoomContainer);
+  }
+</script>
+{% endblock %}

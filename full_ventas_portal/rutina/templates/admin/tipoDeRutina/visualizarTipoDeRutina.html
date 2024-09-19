@@ -9,7 +9,9 @@
 {% endblock extra_styles %}
 
 {% block body %}
-{% include "admin/navbar.html" %}
+{% with options=navbar_options %}
+    {% include "admin/navbar.html" with options=options %}
+{% endwith %}
 <main class="details-main">
     <div class="details-container">
         <h2 class="details-title">Detalles del Tipo de Rutina</h2>
@@ -38,7 +40,7 @@
             </div>
 
             <div class="details-actions">
-                <a href="{% url 'gestionTipoRutinas' %}" class="details-button details-button--cancel">Volver a la lista</a>
+                <a href="{% url 'gestionTipoDeRutinas' %}" class="details-button details-button--cancel">Volver a la lista</a>
             </div>
         </div>
     </div>

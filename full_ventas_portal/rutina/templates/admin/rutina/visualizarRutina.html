@@ -9,7 +9,9 @@
 {% endblock extra_styles %}
 
 {% block body %}
-{% include "admin/navbar.html" %}
+{% with options=navbar_options %}
+    {% include "admin/navbar.html" with options=options %}
+{% endwith %}
 <main class="view-main">
     <div class="view-content">
         <div class="view-form-container">
@@ -19,20 +21,20 @@
                 
                 <div class="view-form__row view-form__row--images-info">
                     <div class="view-form__images">
-                        <div class="view-image-view">
+                        <div class="view-image-view image-zoom-container">
                             {% if rutina.Imagen1 %}
-                                <img src="{{ rutina.Imagen1.url }}" alt="Imagen de la rutina">
+                                <img src="{{ rutina.Imagen1.url }}" alt="Imagen de la rutina" onclick="openZoom(this)">
                             {% else %}
-                                <img src="https://www.shutterstock.com/image-vector/default-ui-image-placeholder-wireframes-600nw-1037719192.jpg" alt="Imagen predeterminada">
+                                <img src="https://www.shutterstock.com/image-vector/default-ui-image-placeholder-wireframes-600nw-1037719192.jpg" alt="Imagen predeterminada" onclick="openZoom(this)">
                             {% endif %}
                         </div>
-                        <div class="view-image-view">
+                        <div class="view-image-view image-zoom-container">
                             {% if rutina.Imagen2 %}
-                                <img src="{{ rutina.Imagen2.url }}" alt="Imagen de la rutina">
+                                <img src="{{ rutina.Imagen2.url }}" alt="Imagen de la rutina" onclick="openZoom(this)">
                             {% else %}
-                                <img src="https://www.shutterstock.com/image-vector/default-ui-image-placeholder-wireframes-600nw-1037719192.jpg" alt="Imagen predeterminada">
+                                <img src="https://www.shutterstock.com/image-vector/default-ui-image-placeholder-wireframes-600nw-1037719192.jpg" alt="Imagen predeterminada" onclick="openZoom(this)">
                             {% endif %}
-                        </div>
+                        </div>                                            
                     </div>
                     
                     <div class="view-form__info">
@@ -112,4 +114,26 @@
         </div>
     </div>
 </main>
+<script>
+    function openZoom(img) {
+        let zoomContainer = document.createElement('div');
+        zoomContainer.className = 'image-zoom-full';
+        
+        let zoomImg = document.createElement('img');
+        zoomImg.src = img.src;
+        
+        let closeButton = document.createElement('span');
+        closeButton.className = 'image-zoom-close';
+        closeButton.innerHTML = '&times;';
+
+        closeButton.onclick = function() {
+            document.body.removeChild(zoomContainer);
+        };
+    
+        zoomContainer.appendChild(closeButton);
+        zoomContainer.appendChild(zoomImg);
+        
+        document.body.appendChild(zoomContainer);
+    }
+</script>
 {% endblock %}

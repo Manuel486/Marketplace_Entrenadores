@@ -8,7 +8,9 @@
 {% endblock extra_styles %}
 
 {% block body %}
-{% include "admin/navbar.html" %}
+{% with options=navbar_options %}
+    {% include "admin/navbar.html" with options=options %}
+{% endwith %}
 <main class="main" id="main">
     <div class="content">
         <div class="form-container">
@@ -201,39 +203,34 @@
         const clientId = document.getElementById('ClienteID').dataset.clientId;
         const imageInput1 = document.getElementById('file-input1');
         const imageInput2 = document.getElementById('file-input2');
-
+    
         if (!clientId) {
             e.preventDefault();
             Swal.fire('Error', 'Debes agregar al cliente', 'error');
             return;
         }
-
-        const validExtensions = ['image/jpeg', 'image/jpg', 'image/png'];
-
+        
+        const validMimeTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    
         function isValidFile(file) {
-            if (!validExtensions.includes(file.type)) {
-                return false;
-            }
-            
-            const filename = file.name;
-            return filename.split('.').length === 2;
+            return validMimeTypes.includes(file.type);
         }
-
+    
         const imageFile1 = imageInput1.files.length ? imageInput1.files[0] : null;
         const imageFile2 = imageInput2.files.length ? imageInput2.files[0] : null;
-
+    
         if (!imageFile1 && !imageFile2) {
             e.preventDefault();
             Swal.fire('Error', 'Debes subir al menos una imagen', 'error');
             return;
         }
-
+    
         if ((imageFile1 && !isValidFile(imageFile1)) || (imageFile2 && !isValidFile(imageFile2))) {
             e.preventDefault(); 
             Swal.fire('Error', 'Las imágenes deben ser de formato JPG, JPEG o PNG', 'error');
             return;
         }
-
+    
         const input = document.createElement('input');
         input.type = 'hidden';
         input.name = 'ClienteID';

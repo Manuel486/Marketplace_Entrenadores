@@ -7,19 +7,58 @@ from django.utils.dateparse import parse_date
 import io
 from decimal import Decimal
 from django.http import JsonResponse
+from django.urls import reverse
 
+def obtener_opciones_navbar(tipoDeRol, nombre_usuario=None):
+    opciones_comunes = [{"name": "", "url": reverse('logout'), "icon": "logout"}]
+    
+    opciones = {
+        'Administrador': [
+            {"name": "Rutinas", "url": reverse('gestionRutinas'), "icon": "run"},
+            {"name": "Tipo de Rutinas", "url": reverse('gestionTipoDeRutinas'), "icon": "format-list-bulleted"},
+            {"name": "Clientes", "url": '#', "icon": "settings"},
+        ],
+        'Instructor': [
+            {"name": "Mis Rutinas", "url": reverse('gestionRutinas'), "icon": "run"},
+            {"name": "Mis Clientes", "url": '#', "icon": "settings"},
+        ]
+    }.get(tipoDeRol, [])
+    
+    if nombre_usuario:
+        opciones.append({"name": nombre_usuario, "url": '#', "icon": "account"})
+
+    return opciones + opciones_comunes
+
+def obtener_usuario_y_navbar(request):
+    usuario_id = request.session.get('usuario_id')
+    if not usuario_id:
+        return None, None, redirect('login')
+    
+    try:
+        usuario = Usuario.objects.get(UsuarioID=usuario_id)
+        nombre_usuario = f"{usuario.Nombre} {usuario.Apellido}"
+        tipoDeRol = request.session.get('usuario_tipo')
+        navbar_options = obtener_opciones_navbar(tipoDeRol, nombre_usuario)
+        return usuario, tipoDeRol, navbar_options
+    except Usuario.DoesNotExist:
+        return None, None, redirect('login')
+    
 def index(request):
     return redirect('login')
 
 def login(request):
+    if request.session.get('usuario_tipo'):
+        return redirect('gestionRutinas')
+
     if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
 
         try:
             usuario = Usuario.objects.get(Username=username)
-            
-            if password == usuario.Password and usuario.Tipo == "Cliente":
+            if password == usuario.Password:
+                request.session['usuario_id'] = usuario.UsuarioID
+                request.session['usuario_tipo'] = usuario.Tipo
                 return redirect('gestionRutinas')
             else:
                 return render(request, 'auth/login.html', {'error': 'Usuario o contraseña no válido'})
@@ -29,32 +68,99 @@ def login(request):
 
     return render(request, 'auth/login.html')
 
-def gestionRutinas(request):
-    query = request.GET.get('search', '')
-    print("gaaa")
-    if query:
-        rutinas = Rutina.objects.filter(Nombre__icontains=query)
-    else:
-        rutinas = Rutina.objects.all()
+def logout(request):
+    request.session.flush()
+    return redirect('login')
+
+def validarUsuarioAdministrador(request):
+    if request.session.get('usuario_tipo') != 'Administrador':
+        return redirect('login') 
+    return None
+
+def gestionRutinas(request): 
+    tipoDeRol = request.session.get('usuario_tipo')
+    usuario_id = request.session.get('usuario_id')
+
+    if not usuario_id:
+        return redirect('login')
     
-    if not rutinas:
-        mensaje = "No se encontraron rutinas."
-    else:
-        mensaje = None
+    try:
+        usuario = Usuario.objects.get(UsuarioID=usuario_id)
+        nombre_usuario = f"{usuario.Nombre} {usuario.Apellido}"
+    except Usuario.DoesNotExist:
+        return redirect('login')
 
-    for rutina in rutinas:
-        imagen1 = rutina.Imagen1
-        if imagen1 and imagen1.name:
-            print(f"Rutina ID: {rutina.RutinaID}")
-            print("URL:", imagen1.url)
-            print("Nombre:", imagen1.name)
-            print("Path:", imagen1.path)
+    navbar_options = obtener_opciones_navbar(tipoDeRol, nombre_usuario)
+
+    if tipoDeRol == 'Administrador':
+        query = request.GET.get('search', '')
+
+        if query:
+            rutinas = Rutina.objects.filter(Nombre__icontains=query)
         else:
-            print(f"Rutina ID: {rutina.RutinaID} no tiene imagen1 asociada.")
+            rutinas = Rutina.objects.all()
+        
+        if not rutinas:
+            mensaje = "No se encontraron rutinas."
+        else:
+            mensaje = None
 
-    return render(request, "admin/rutina/gestionRutinas.html", {"rutinas": rutinas, "mensaje": mensaje})
+        context = {
+            "rutinas": rutinas, 
+            "mensaje": mensaje,
+            "administrador": usuario,
+            "navbar_options": navbar_options
+        }
 
+        return render(request, "admin/rutina/gestionRutinas.html", context )
+    
+    elif tipoDeRol == 'Instructor':
+        try:
+            instructor = Instructor.objects.get(UsuarioID=usuario_id)
+            query = request.GET.get('search', '')
+
+            if query:
+                rutinas = Rutina.objects.filter(InstructorID=instructor.InstructorID, Nombre__icontains=query)
+            else:
+                rutinas = Rutina.objects.filter(InstructorID=instructor.InstructorID)
+            
+            if not rutinas:
+                mensaje = "No se encontraron rutinas."
+            else:
+                mensaje = None
+
+            context = {
+                "rutinas": rutinas, 
+                "mensaje": mensaje,
+                "instructor": instructor,
+                "navbar_options": navbar_options
+            }
+
+            return render(request, "admin/rutina/gestionRutinas.html", context )
+        
+        except Instructor.DoesNotExist:
+            return redirect('login')
+    
+    else:
+        return redirect('login')
+
+
+    
 def visualizarRutina(request, id):
+    tipoDeRol = request.session.get('usuario_tipo')
+    usuario_id = request.session.get('usuario_id')
+
+    if not usuario_id:
+        return redirect('login')
+
+    try:
+        usuario = Usuario.objects.get(UsuarioID=usuario_id)
+        nombre_usuario = f"{usuario.Nombre} {usuario.Apellido}"
+    except Usuario.DoesNotExist:
+        return redirect('login')
+    
+    navbar_options = obtener_opciones_navbar(tipoDeRol, nombre_usuario)
+
     rutina = get_object_or_404(Rutina, RutinaID=id)
     
     metas = Meta.objects.filter(RutinaID=rutina)
@@ -68,10 +174,25 @@ def visualizarRutina(request, id):
         "metas": metas,
         "instructores": instructores,
         "tipos": tipos,
-        "clientes": clientes
+        "clientes": clientes,
+        "navbar_options": navbar_options
     })
 
 def registrarRutina(request):
+    tipoDeRol = request.session.get('usuario_tipo')
+    usuario_id = request.session.get('usuario_id')
+
+    if not usuario_id:
+        return redirect('login')
+    
+    try:
+        usuario = Usuario.objects.get(UsuarioID=usuario_id)
+        nombre_usuario = f"{usuario.Nombre} {usuario.Apellido}"
+    except Usuario.DoesNotExist:
+        return redirect('login')
+
+    navbar_options = obtener_opciones_navbar(tipoDeRol, nombre_usuario)
+
     if request.method == "POST":
         nombre = request.POST.get('Nombre')
         tipo_id = request.POST.get('TipoID')
@@ -120,7 +241,6 @@ def registrarRutina(request):
         i = 0
         while True:
             nombre_meta = request.POST.get(f'MetaNombre{i}')
-            print("LA META ES:::",nombre_meta)
             if not nombre_meta:
                 break
 
@@ -138,17 +258,52 @@ def registrarRutina(request):
 
         return redirect('gestionRutinas')
 
-    instructores = []
-    tipos = TipoDeRutina.objects.all()
-    clientes = Cliente.objects.all()
-    
-    return render(request, "admin/rutina/registrarRutina.html", {
-        "instructores": instructores, 
-        "tipos": tipos,
-        "clientes": clientes
-    })
+    if tipoDeRol == 'Administrador':
+        instructores = []
+        tipos = TipoDeRutina.objects.all()
+        clientes = Cliente.objects.all()
+        
+        return render(request, "admin/rutina/registrarRutina.html", {
+            "instructores": instructores, 
+            "tipos": tipos,
+            "clientes": clientes,
+            "navbar_options": navbar_options
+        })
+
+    elif tipoDeRol == 'Instructor':
+        instructor = Instructor.objects.get(UsuarioID=usuario_id)
+ 
+        especialidades = Especialidad.objects.filter(especialidadinstructor__InstructorID=instructor)
+        tipos = TipoDeRutina.objects.filter(
+            tipoderutinaespecialidad__EspecialidadID__in=especialidades
+        ).distinct()
+        clientes = Cliente.objects.all()
+
+        return render(request, "admin/rutina/registrarRutinaInstructor.html", {
+            "instructor_id": instructor.InstructorID,
+            "tipos": tipos,
+            "clientes": clientes,
+            "navbar_options": navbar_options
+        })
+
+    else:
+        return redirect('login')
 
 def editarRutina(request, id):
+    tipoDeRol = request.session.get('usuario_tipo')
+    usuario_id = request.session.get('usuario_id')
+
+    if not usuario_id:
+        return redirect('login')
+    
+    try:
+        usuario = Usuario.objects.get(UsuarioID=usuario_id)
+        nombre_usuario = f"{usuario.Nombre} {usuario.Apellido}"
+    except Usuario.DoesNotExist:
+        return redirect('login')
+
+    navbar_options = obtener_opciones_navbar(tipoDeRol, nombre_usuario)
+
     rutina = get_object_or_404(Rutina, RutinaID=id)
     
     if request.method == "POST":
@@ -166,9 +321,6 @@ def editarRutina(request, id):
 
         eliminarImagen1 = request.POST.get('EliminarImagen1') == 'true'
         eliminarImagen2 = request.POST.get('EliminarImagen2') == 'true'
-
-        print("EliminarImagen1 : ",eliminarImagen1)
-        print("EliminarImagen1 : ",eliminarImagen2)
 
         instructor = None
         cliente = None
@@ -250,24 +402,50 @@ def editarRutina(request, id):
             i += 1
 
         return redirect('gestionRutinas')
-
-    tipo_rutina = get_object_or_404(TipoDeRutina, pk=rutina.TipoID_id)
-    especialidad_id = TipoDeRutinaEspecialidad.objects.filter(TipoDeRutinaID=tipo_rutina, EspecialidadID__isnull=False).values_list('EspecialidadID', flat=True).first()
-    instructores = Instructor.objects.filter(Especialidad__EspecialidadID=especialidad_id).distinct()
-    tipos = TipoDeRutina.objects.all()
-    clientes = Cliente.objects.all()
     
-    
-    metas = Meta.objects.filter(RutinaID=rutina)
+    if tipoDeRol == 'Administrador':
+        tipo_rutina = get_object_or_404(TipoDeRutina, pk=rutina.TipoID_id)
+        especialidad_id = TipoDeRutinaEspecialidad.objects.filter(TipoDeRutinaID=tipo_rutina, EspecialidadID__isnull=False).values_list('EspecialidadID', flat=True).first()
+        instructores = Instructor.objects.filter(Especialidad__EspecialidadID=especialidad_id).distinct()
+        tipos = TipoDeRutina.objects.all()
+        clientes = Cliente.objects.all()
+        
+        
+        metas = Meta.objects.filter(RutinaID=rutina)
 
-    return render(request, "admin/rutina/editarRutina.html", {
-        "instructores": instructores, 
-        "tipos": tipos, 
-        "clientes": clientes,
-        "rutina": rutina,
-        "metas": metas
-    })
+        return render(request, "admin/rutina/editarRutina.html", {
+            "instructores": instructores, 
+            "tipos": tipos, 
+            "clientes": clientes,
+            "rutina": rutina,
+            "metas": metas,
+            "navbar_options": navbar_options
+        })
 
+
+    elif tipoDeRol == 'Instructor':
+        instructor = Instructor.objects.get(UsuarioID=usuario_id)
+        especialidades = Especialidad.objects.filter(especialidadinstructor__InstructorID=instructor)
+        tipos = TipoDeRutina.objects.filter(
+            tipoderutinaespecialidad__EspecialidadID__in=especialidades
+        ).distinct()
+
+        clientes = Cliente.objects.all()
+        
+        metas = Meta.objects.filter(RutinaID=rutina)
+
+        return render(request, "admin/rutina/editarRutinaInstructor.html", {
+            "instructor_id": instructor.InstructorID,
+            "tipos": tipos, 
+            "clientes": clientes,
+            "rutina": rutina,
+            "metas": metas,
+            "navbar_options": navbar_options
+        })
+
+
+    else:
+        return redirect('login')
 
 def eliminarRutina(request, id):
     rutina = get_object_or_404(Rutina, RutinaID=id)
@@ -308,11 +486,39 @@ def obtener_instructores_por_especialidad(request):
     return JsonResponse(instructores_data, safe=False)
 
 
-def gestionTipoRutinas(request):
+def gestionTipoDeRutinas(request):
+    tipoDeRol = request.session.get('usuario_tipo')
+    usuario_id = request.session.get('usuario_id')
+
+    if not usuario_id:
+        return redirect('login')
+    
+    try:
+        usuario = Usuario.objects.get(UsuarioID=usuario_id)
+        nombre_usuario = f"{usuario.Nombre} {usuario.Apellido}"
+    except Usuario.DoesNotExist:
+        return redirect('login')
+
+    navbar_options = obtener_opciones_navbar(tipoDeRol, nombre_usuario)
+
     tipos = TipoDeRutina.objects.all()
-    return render(request, "admin/tipoDeRutina/gestionTipoDeRutina.html", {"tipos": tipos})
+    return render(request, "admin/tipoDeRutina/gestionTipoDeRutinas.html", {"tipos": tipos, "navbar_options": navbar_options})
 
 def registrarTipoDeRutina(request):
+    tipoDeRol = request.session.get('usuario_tipo')
+    usuario_id = request.session.get('usuario_id')
+
+    if not usuario_id:
+        return redirect('login')
+    
+    try:
+        usuario = Usuario.objects.get(UsuarioID=usuario_id)
+        nombre_usuario = f"{usuario.Nombre} {usuario.Apellido}"
+    except Usuario.DoesNotExist:
+        return redirect('login')
+
+    navbar_options = obtener_opciones_navbar(tipoDeRol, nombre_usuario)
+
     if request.method == "POST":
         nombre = request.POST.get('Nombre')
         descripcion = request.POST.get('Descripcion')
@@ -334,12 +540,29 @@ def registrarTipoDeRutina(request):
             except Exception as e:
                 print(f"Se produjo un error al procesar la especialidad con ID {especialidad_id}: {e}")
 
-        return redirect('gestionTipoRutinas')
+        return redirect('gestionTipoDeRutinas')
 
     especialidades = Especialidad.objects.all()
-    return render(request, "admin/tipoDeRutina/registrarTipoDeRutina.html", {"especialidades": especialidades})
+    return render(request, "admin/tipoDeRutina/registrarTipoDeRutina.html", {
+        "especialidades": especialidades, 
+        "navbar_options": navbar_options
+    })
 
 def editarTipoDeRutina(request, id):
+    tipoDeRol = request.session.get('usuario_tipo')
+    usuario_id = request.session.get('usuario_id')
+
+    if not usuario_id:
+        return redirect('login')
+    
+    try:
+        usuario = Usuario.objects.get(UsuarioID=usuario_id)
+        nombre_usuario = f"{usuario.Nombre} {usuario.Apellido}"
+    except Usuario.DoesNotExist:
+        return redirect('login')
+
+    navbar_options = obtener_opciones_navbar(tipoDeRol, nombre_usuario)
+
     tipo = get_object_or_404(TipoDeRutina, pk=id)
     if request.method == "POST":
         nombre = request.POST.get('Nombre')
@@ -363,7 +586,7 @@ def editarTipoDeRutina(request, id):
             except Especialidad.DoesNotExist:
                 print(f"La especialidad con ID {especialidad_id} no existe.")
         
-        return redirect('gestionTipoRutinas')
+        return redirect('gestionTipoDeRutinas')
     
     especialidades = Especialidad.objects.all()
     tipo_especialidades = TipoDeRutinaEspecialidad.objects.filter(TipoDeRutinaID=tipo).select_related('EspecialidadID')
@@ -372,16 +595,30 @@ def editarTipoDeRutina(request, id):
     return render(request, "admin/tipoDeRutina/editarTipoDeRutina.html", {
         "tipo": tipo,
         "especialidades": especialidades,
-        "tipo_especialidades_ids": tipo_especialidades_ids
+        "tipo_especialidades_ids": tipo_especialidades_ids,
+        "navbar_options": navbar_options,
     })
 
 def visualizarTipoDeRutina(request, id):
+    tipoDeRol = request.session.get('usuario_tipo')
+    usuario_id = request.session.get('usuario_id')
+
+    if not usuario_id:
+        return redirect('login')
+    
+    try:
+        usuario = Usuario.objects.get(UsuarioID=usuario_id)
+        nombre_usuario = f"{usuario.Nombre} {usuario.Apellido}"
+    except Usuario.DoesNotExist:
+        return redirect('login')
+
+    navbar_options = obtener_opciones_navbar(tipoDeRol, nombre_usuario)
     tipo = get_object_or_404(TipoDeRutina, pk=id)
     especialidades = TipoDeRutinaEspecialidad.objects.filter(TipoDeRutinaID=tipo).select_related('EspecialidadID')
     
     especialidades_list = [especialidad.EspecialidadID for especialidad in especialidades]
     
-    return render(request, "admin/tipoDeRutina/visualizarTipoDeRutina.html", {"tipo": tipo, "especialidades": especialidades_list})
+    return render(request, "admin/tipoDeRutina/visualizarTipoDeRutina.html", {"tipo": tipo, "especialidades": especialidades_list,"navbar_options": navbar_options,})
 
 def eliminarTipoDeRutina(request, id):
     tipo = get_object_or_404(TipoDeRutina, pk=id)
@@ -396,4 +633,26 @@ def eliminarTipoDeRutina(request, id):
     TipoDeRutinaEspecialidad.objects.filter(TipoDeRutinaID=tipo).delete()
     tipo.delete()
 
-    return redirect('gestionTipoRutinas')
+    return redirect('gestionTipoDeRutinas')
+
+def listarRutinasDelCliente(request, id):
+    rutinas = Rutina.objects.filter(ClienteID=id)
+    
+    if not rutinas.exists():
+        mensaje = "El cliente no tiene ninguna rutina asignada."
+        return render(request, "listarRutinasDelCliente.html", {
+            "mensaje": mensaje,
+        })
+    
+    metas = Meta.objects.filter(RutinaID__in=rutinas)
+    instructores = Instructor.objects.all()
+    tipos = TipoDeRutina.objects.all()
+    clientes = Cliente.objects.all()
+    
+    return render(request, "listarRutinasDelCliente.html", {
+        "rutinas": rutinas,
+        "metas": metas,
+        "instructores": instructores,
+        "tipos": tipos,
+        "clientes": clientes,
+    })

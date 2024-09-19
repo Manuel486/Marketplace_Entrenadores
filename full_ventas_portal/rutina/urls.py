@@ -15,9 +15,13 @@ urlpatterns = [
     path('obtener_metas_por_tipo_de_rutina/', views.obtener_metas_por_tipo_de_rutina, name='obtener_metas_por_tipo_de_rutina'),
 
     ## Tipo de Rutinas
-    path('gestionTipoDeRutinas/', views.gestionTipoRutinas, name='gestionTipoRutinas'),
+    path('gestionTipoDeRutinas/', views.gestionTipoDeRutinas, name='gestionTipoDeRutinas'),
     path('registrarTipoDeRutina/', views.registrarTipoDeRutina, name='registrarTipoDeRutina'),
     path('editarTipoDeRutina/<int:id>/', views.editarTipoDeRutina, name='editarTipoDeRutina'),
     path('visualizarTipoDeRutina/<int:id>/', views.visualizarTipoDeRutina, name='visualizarTipoDeRutina'),
     path('eliminarTipoDeRutina/<int:id>/', views.eliminarTipoDeRutina, name='eliminarTipoDeRutina'),
+
+    path('logout/', views.logout, name='logout'),
+    
+    path('listarRutinasDelCliente/<int:id>/', views.listarRutinasDelCliente, name='listarRutinasDelCliente'),
 ]

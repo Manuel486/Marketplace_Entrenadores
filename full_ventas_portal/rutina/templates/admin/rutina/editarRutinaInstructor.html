@@ -57,14 +57,7 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="form__field">
-                        <label for="InstructorID" class="form__label">Instructor</label>
-                        <select id="InstructorID" name="InstructorID" class="form__input" required>
-                            {% for instructor in instructores %}
-                                <option value="{{ instructor.InstructorID }}" {% if instructor.InstructorID == rutina.InstructorID_id %}selected{% endif %}>{{ instructor.Nombres }} {{ instructor.Apellidos }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                    <input type="hidden" id="InstructorID" name="InstructorID" class="form__input" value="{{ instructor_id }}" required>
                     <div class="form__field">
                         <label for="Frecuencia" class="form__label">Frecuencia</label>
                         <input type="text" id="Frecuenca" name="Frecuencia" class="form__input" value="{{ rutina.Frecuencia }}" placeholder="Ingresar la frecuencia" maxlength="50" required>
@@ -242,7 +235,6 @@
     document.addEventListener('DOMContentLoaded', function () {
 
         const tipoRutinaSelect = document.getElementById('TipoID');
-        const instructorSelect = document.getElementById('InstructorID');
         const frecuenciaSelect = document.getElementById('Frecuencia');
 
         const fechaInicioInput = document.getElementById('FechaInicio');
@@ -250,37 +242,12 @@
 
         const today = new Date().toISOString().split('T')[0];
 
-        //fechaInicioInput.setAttribute('min', today);
-        //fechaFinInput.setAttribute('min', today);
 
         tipoRutinaSelect.addEventListener('change', function () {
             const tipoRutinaID = this.value;
             objectiveCount = 0;
 
             if (tipoRutinaID) {
-                instructorSelect.disabled = false;
-                instructorSelect.innerHTML = ''; 
-
-                const defaultOptionInstructor = document.createElement('option');
-                defaultOptionInstructor.textContent = 'Seleccionar instructor';
-                defaultOptionInstructor.disabled = true;
-                defaultOptionInstructor.selected = true;
-                defaultOptionInstructor.value = "";
-                instructorSelect.appendChild(defaultOptionInstructor);
-
-                fetch(`/obtener-instructores/?tipo_rutina_id=${tipoRutinaID}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        data.forEach(function (instructor) {
-                            const option = document.createElement('option');
-                            option.value = instructor.id;
-                            option.textContent = instructor.nombre;
-                            instructorSelect.appendChild(option);
-                        });
-                    })
-                    .catch(error => console.error('Error fetching instructors:', error));
-
-
                 fetch(`/obtener_metas_por_tipo_de_rutina/?tipo_rutina_id=${tipoRutinaID}`)
                     .then(response => response.json())
                     .then(data => {

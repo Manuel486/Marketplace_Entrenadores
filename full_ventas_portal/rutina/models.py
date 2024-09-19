@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.hashers import make_password, check_password
 
 class Especialidad(models.Model):
     ESTADO_CHOICES = [
@@ -69,6 +70,7 @@ class Instructor(models.Model):
     ]
 
     InstructorID = models.AutoField(primary_key=True, db_column='InstructorID')
+    UsuarioID = models.OneToOneField('Usuario', on_delete=models.CASCADE, db_column='UsuarioID')
     Nombres = models.CharField(max_length=100, db_column='Nombres')
     Apellidos = models.CharField(max_length=100, db_column='Apellidos')
     Email = models.EmailField(max_length=100, db_column='Email')
@@ -177,7 +179,6 @@ class Meta(models.Model):
 
 class Usuario(models.Model):
     TIPO_CHOICES = [
-        ('Cliente', 'Cliente'),
         ('Instructor', 'Instructor'),
         ('Administrador', 'Administrador'),
     ]
